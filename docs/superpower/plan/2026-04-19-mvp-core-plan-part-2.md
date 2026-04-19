@@ -16,7 +16,7 @@ Tests build DOM fixtures via a small helper instead of `innerHTML`. Create this 
 
 **File:** `E:\source\specsnap\packages\core\tests\dom-fixture.ts`
 
-```ts
+```
 // DOM fixture helpers for tests. Avoids innerHTML for XSS hygiene.
 
 export interface ElementSpec {
@@ -55,15 +55,20 @@ export function mount(el: HTMLElement): HTMLElement {
 ### Task 6: Viewport + scroll capture
 
 **Files:**
-- Create: `E:\source\specsnap\packages\core\vitest.config.ts`
-- Create: `E:\source\specsnap\packages\core\src\viewport.ts`
-- Create: `E:\source\specsnap\packages\core\tests\dom-fixture.ts` (see above)
-- Create: `E:\source\specsnap\packages\core\tests\viewport.test.ts`
-- Modify: `E:\source\specsnap\packages\core\src\index.ts`
 
-- [ ] **Step 1: Create `vitest.config.ts`**
+Create: `E:\source\specsnap\packages\core\vitest.config.ts`
 
-```ts
+Create: `E:\source\specsnap\packages\core\src\viewport.ts`
+
+Create: `E:\source\specsnap\packages\core\tests\dom-fixture.ts` (see above)
+
+Create: `E:\source\specsnap\packages\core\tests\viewport.test.ts`
+
+Modify: `E:\source\specsnap\packages\core\src\index.ts`
+
+ **Step 1: Create** `**vitest.config.ts**`
+
+```
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -75,11 +80,11 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 2: Create `tests/dom-fixture.ts`** (content shown above in "Shared Test Helper")
+ **Step 2: Create** `**tests/dom-fixture.ts**` (content shown above in "Shared Test Helper")
 
-- [ ] **Step 3: Write failing test — `tests/viewport.test.ts`**
+ **Step 3: Write failing test —** `**tests/viewport.test.ts**`
 
-```ts
+```
 import { describe, expect, it } from 'vitest';
 
 import { captureScroll, captureViewport } from '../src/viewport.js';
@@ -115,17 +120,17 @@ describe('captureScroll', () => {
 });
 ```
 
-- [ ] **Step 4: Run test to verify it fails**
+*   **Step 4: Run test to verify it fails**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test
 ```
 
 Expected: FAIL — cannot find module `../src/viewport.js`.
 
-- [ ] **Step 5: Write `src/viewport.ts`**
+*   **Step 5: Write** `**src/viewport.ts**`
 
-```ts
+```
 import type { ScrollPosition, Viewport } from './types.js';
 
 /**
@@ -146,23 +151,23 @@ export function captureScroll(win: Window = window): ScrollPosition {
 }
 ```
 
-- [ ] **Step 6: Run tests to verify they pass**
+*   **Step 6: Run tests to verify they pass**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test
 ```
 
 Expected: 4 tests PASS.
 
-- [ ] **Step 7: Re-export + commit**
+*   **Step 7: Re-export + commit**
 
 Append to `packages/core/src/index.ts`:
 
-```ts
+```
 export { captureScroll, captureViewport } from './viewport.js';
 ```
 
-```bash
+```
 git add packages/core/
 git commit -m "feat(core): add captureViewport and captureScroll utilities"
 ```
@@ -172,13 +177,16 @@ git commit -m "feat(core): add captureViewport and captureScroll utilities"
 ### Task 7: Bilingual lexicon (50 CSS properties)
 
 **Files:**
-- Create: `E:\source\specsnap\packages\core\src\lexicon.ts`
-- Create: `E:\source\specsnap\packages\core\tests\lexicon.test.ts`
-- Modify: `E:\source\specsnap\packages\core\src\index.ts`
 
-- [ ] **Step 1: Write failing test — `tests/lexicon.test.ts`**
+Create: `E:\source\specsnap\packages\core\src\lexicon.ts`
 
-```ts
+Create: `E:\source\specsnap\packages\core\tests\lexicon.test.ts`
+
+Modify: `E:\source\specsnap\packages\core\src\index.ts`
+
+ **Step 1: Write failing test —** `**tests/lexicon.test.ts**`
+
+```
 import { describe, expect, it } from 'vitest';
 
 import { annotate, DEFAULT_LEXICON } from '../src/lexicon.js';
@@ -216,17 +224,17 @@ describe('annotate', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+*   **Step 2: Run test to verify it fails**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test lexicon
 ```
 
 Expected: FAIL — cannot find module.
 
-- [ ] **Step 3: Write `src/lexicon.ts`**
+*   **Step 3: Write** `**src/lexicon.ts**`
 
-```ts
+```
 /**
  * Bilingual lexicon — maps CSS property names to Traditional Chinese annotations.
  * First-class schema feature (P3 of the design). Override via SerializeOptions.lexiconOverride.
@@ -322,23 +330,23 @@ export function annotate(
 }
 ```
 
-- [ ] **Step 4: Run tests — expect PASS**
+*   **Step 4: Run tests — expect PASS**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test lexicon
 ```
 
 Expected: 6 tests PASS.
 
-- [ ] **Step 5: Re-export + commit**
+*   **Step 5: Re-export + commit**
 
 Append to `packages/core/src/index.ts`:
 
-```ts
+```
 export { annotate, DEFAULT_LEXICON } from './lexicon.js';
 ```
 
-```bash
+```
 git add packages/core/
 git commit -m "feat(core): add bilingual lexicon with 50+ CSS property translations"
 ```
@@ -348,13 +356,16 @@ git commit -m "feat(core): add bilingual lexicon with 50+ CSS property translati
 ### Task 8: Element capture utility
 
 **Files:**
-- Create: `E:\source\specsnap\packages\core\src\capture.ts`
-- Create: `E:\source\specsnap\packages\core\tests\capture.test.ts`
-- Modify: `E:\source\specsnap\packages\core\src\index.ts`
 
-- [ ] **Step 1: Write failing test — `tests/capture.test.ts`**
+Create: `E:\source\specsnap\packages\core\src\capture.ts`
 
-```ts
+Create: `E:\source\specsnap\packages\core\tests\capture.test.ts`
+
+Modify: `E:\source\specsnap\packages\core\src\index.ts`
+
+ **Step 1: Write failing test —** `**tests/capture.test.ts**`
+
+```
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { captureElement, captureSession } from '../src/capture.js';
@@ -427,17 +438,17 @@ describe('captureSession', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+*   **Step 2: Run test to verify it fails**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test capture
 ```
 
 Expected: FAIL — cannot find module.
 
-- [ ] **Step 3: Write `src/capture.ts`**
+*   **Step 3: Write** `**src/capture.ts**`
 
-```ts
+```
 import { SCHEMA_VERSION } from './types.js';
 import type {
    Background,
@@ -617,23 +628,23 @@ function makeSessionId(): string {
 }
 ```
 
-- [ ] **Step 4: Run all tests — expect PASS**
+*   **Step 4: Run all tests — expect PASS**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test
 ```
 
 Expected: all tests (viewport + lexicon + capture, 17 total) PASS.
 
-- [ ] **Step 5: Re-export + commit**
+*   **Step 5: Re-export + commit**
 
 Append to `packages/core/src/index.ts`:
 
-```ts
+```
 export { captureElement, captureSession } from './capture.js';
 ```
 
-```bash
+```
 git add packages/core/
 git commit -m "feat(core): add captureElement and captureSession capture engine"
 ```
@@ -645,13 +656,16 @@ git commit -m "feat(core): add captureElement and captureSession capture engine"
 ### Task 9: Markdown serializer
 
 **Files:**
-- Create: `E:\source\specsnap\packages\core\src\serialize-md.ts`
-- Create: `E:\source\specsnap\packages\core\tests\serialize-md.test.ts`
-- Modify: `E:\source\specsnap\packages\core\src\index.ts`
 
-- [ ] **Step 1: Write failing test — `tests/serialize-md.test.ts`**
+Create: `E:\source\specsnap\packages\core\src\serialize-md.ts`
 
-```ts
+Create: `E:\source\specsnap\packages\core\tests\serialize-md.test.ts`
+
+Modify: `E:\source\specsnap\packages\core\src\index.ts`
+
+ **Step 1: Write failing test —** `**tests/serialize-md.test.ts**`
+
+```
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { captureSession } from '../src/capture.js';
@@ -719,15 +733,15 @@ describe('toMarkdown', () => {
 });
 ```
 
-- [ ] **Step 2: Run test — expect FAIL** (module missing)
+*   **Step 2: Run test — expect FAIL** (module missing)
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test serialize-md
 ```
 
-- [ ] **Step 3: Write `src/serialize-md.ts`**
+*   **Step 3: Write** `**src/serialize-md.ts**`
 
-```ts
+```
 import { annotate } from './lexicon.js';
 import type { Frame, SerializeOptions, Session } from './types.js';
 
@@ -796,23 +810,23 @@ function renderFrame(
 }
 ```
 
-- [ ] **Step 4: Run tests — expect PASS**
+*   **Step 4: Run tests — expect PASS**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test serialize-md
 ```
 
 Expected: 5 tests PASS.
 
-- [ ] **Step 5: Re-export + commit**
+*   **Step 5: Re-export + commit**
 
 Append to `packages/core/src/index.ts`:
 
-```ts
+```
 export { toMarkdown } from './serialize-md.js';
 ```
 
-```bash
+```
 git add packages/core/
 git commit -m "feat(core): add Markdown serializer with YAML frontmatter and bilingual annotations"
 ```
@@ -822,13 +836,16 @@ git commit -m "feat(core): add Markdown serializer with YAML frontmatter and bil
 ### Task 10: JSON serializer
 
 **Files:**
-- Create: `E:\source\specsnap\packages\core\src\serialize-json.ts`
-- Create: `E:\source\specsnap\packages\core\tests\serialize-json.test.ts`
-- Modify: `E:\source\specsnap\packages\core\src\index.ts`
 
-- [ ] **Step 1: Write failing test — `tests/serialize-json.test.ts`**
+Create: `E:\source\specsnap\packages\core\src\serialize-json.ts`
 
-```ts
+Create: `E:\source\specsnap\packages\core\tests\serialize-json.test.ts`
+
+Modify: `E:\source\specsnap\packages\core\src\index.ts`
+
+ **Step 1: Write failing test —** `**tests/serialize-json.test.ts**`
+
+```
 import { describe, expect, it } from 'vitest';
 
 import { captureSession } from '../src/capture.js';
@@ -876,15 +893,15 @@ describe('toJSON', () => {
 });
 ```
 
-- [ ] **Step 2: Run test — expect FAIL**
+*   **Step 2: Run test — expect FAIL**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test serialize-json
 ```
 
-- [ ] **Step 3: Write `src/serialize-json.ts`**
+*   **Step 3: Write** `**src/serialize-json.ts**`
 
-```ts
+```
 import type { SerializeOptions, Session } from './types.js';
 
 /**
@@ -897,19 +914,19 @@ export function toJSON(session: Session, options: SerializeOptions = {}): string
 }
 ```
 
-- [ ] **Step 4: Run all tests — expect PASS**
+*   **Step 4: Run all tests — expect PASS**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test
 ```
 
 Expected: all tests (~26 total) PASS.
 
-- [ ] **Step 5: Finalize `src/index.ts`**
+*   **Step 5: Finalize** `**src/index.ts**`
 
 Replace `packages/core/src/index.ts` with the complete final export list:
 
-```ts
+```
 export const VERSION = '0.0.1';
 
 export {
@@ -934,9 +951,9 @@ export { toMarkdown } from './serialize-md.js';
 export { toJSON } from './serialize-json.js';
 ```
 
-- [ ] **Step 6: Commit**
+*   **Step 6: Commit**
 
-```bash
+```
 git add packages/core/
 git commit -m "feat(core): add JSON serializer with pretty/compact modes"
 ```
@@ -948,26 +965,27 @@ git commit -m "feat(core): add JSON serializer with pretty/compact modes"
 ### Task 11: Playground smoke test in a real browser
 
 **Files:**
-- Modify: `E:\source\specsnap\pnpm-workspace.yaml`
-- Create: `E:\source\specsnap\apps\playground\package.json`
-- Create: `E:\source\specsnap\apps\playground\index.html`
-- Create: `E:\source\specsnap\apps\playground\main.ts`
+
+*   Modify: `E:\source\specsnap\pnpm-workspace.yaml`
+*   Create: `E:\source\specsnap\apps\playground\package.json`
+*   Create: `E:\source\specsnap\apps\playground\index.html`
+*   Create: `E:\source\specsnap\apps\playground\main.ts`
 
 > **Why:** unit tests use happy-dom (approximation). Real browsers compute styles differently. One end-to-end smoke test catches obvious real-browser bugs before npm publish.
 
-- [ ] **Step 1: Update `pnpm-workspace.yaml`**
+*   **Step 1: Update** `**pnpm-workspace.yaml**`
 
 Replace content:
 
-```yaml
+```
 packages:
   - 'packages/*'
   - 'apps/*'
 ```
 
-- [ ] **Step 2: Write `apps/playground/package.json`**
+*   **Step 2: Write** `**apps/playground/package.json**`
 
-```json
+```
 {
   "name": "specsnap-playground",
   "version": "0.0.0",
@@ -985,7 +1003,7 @@ packages:
 }
 ```
 
-- [ ] **Step 3: Write `apps/playground/index.html`**
+*   **Step 3: Write** `**apps/playground/index.html**`
 
 ```html
 <!DOCTYPE html>
@@ -1018,9 +1036,9 @@ packages:
 </html>
 ```
 
-- [ ] **Step 4: Write `apps/playground/main.ts`**
+*   **Step 4: Write** `**apps/playground/main.ts**`
 
-```ts
+```
 import { captureSession, toJSON, toMarkdown } from '@tw199501/specsnap-core';
 
 const inspectBtn = document.getElementById('inspect');
@@ -1037,9 +1055,9 @@ inspectBtn.addEventListener('click', () => {
 });
 ```
 
-- [ ] **Step 5: Install + build core + launch playground**
+*   **Step 5: Install + build core + launch playground**
 
-```bash
+```
 pnpm install
 pnpm --filter @tw199501/specsnap-core build
 pnpm --filter specsnap-playground dev
@@ -1047,23 +1065,23 @@ pnpm --filter specsnap-playground dev
 
 Expected: Vite dev server starts (usually `http://localhost:5173/`).
 
-- [ ] **Step 6: Manual verification in Chrome**
+*   **Step 6: Manual verification in Chrome**
 
-1. Open `http://localhost:5173/` in Chrome.
-2. Click the "Inspect Save button" button.
-3. Verify the Markdown panel shows:
-   - YAML frontmatter with `viewport:`, `session_id: s-...`
-   - Header `# Frame 1 · button#save`
-   - `size: 120 × 34 px (寬度) × (高度)`
-   - `padding: 4 / 12 / 4 / 12 (上/右/下/左) (內邊距)`
-   - `background-color: rgb(255, 80, 0) (背景色)`
-4. Verify the JSON panel shows valid pretty-printed JSON with `"schemaVersion": "0.0.1"` and a `"frames"` array of length 1.
+1.  Open `http://localhost:5173/` in Chrome.
+2.  Click the "Inspect Save button" button.
+3.  Verify the Markdown panel shows:
+    *   YAML frontmatter with `viewport:`, `session_id: s-...`
+    *   Header `# Frame 1 · button#save`
+    *   `size: 120 × 34 px (寬度) × (高度)`
+    *   `padding: 4 / 12 / 4 / 12 (上/右/下/左) (內邊距)`
+    *   `background-color: rgb(255, 80, 0) (背景色)`
+4.  Verify the JSON panel shows valid pretty-printed JSON with `"schemaVersion": "0.0.1"` and a `"frames"` array of length 1.
 
 If any assertion fails, debug `capture.ts` or `serialize-md.ts`, fix, re-run tests, commit the fix.
 
-- [ ] **Step 7: Commit**
+*   **Step 7: Commit**
 
-```bash
+```
 git add apps/ pnpm-workspace.yaml pnpm-lock.yaml
 git commit -m "chore(playground): add Vite playground for smoke testing specsnap-core"
 ```
@@ -1073,12 +1091,14 @@ git commit -m "chore(playground): add Vite playground for smoke testing specsnap
 ### Task 12: Publish `0.0.1` to npm
 
 **Files:**
-- Create: `E:\source\specsnap\packages\core\README.md`
-- Create: `E:\source\specsnap\packages\core\LICENSE` (copy of root)
 
-- [ ] **Step 1: Write `packages/core/README.md`**
+Create: `E:\source\specsnap\packages\core\README.md`
 
-````markdown
+Create: `E:\source\specsnap\packages\core\LICENSE` (copy of root)
+
+ **Step 1: Write** `**packages/core/README.md**`
+
+````
 # @tw199501/specsnap-core
 
 > Core capture and serialization library for [SpecSnap](https://github.com/tw199501/specsnap).
@@ -1125,15 +1145,15 @@ const json = toJSON(session);
 [MIT](./LICENSE) © tw199501
 ````
 
-- [ ] **Step 2: Copy LICENSE**
+*   **Step 2: Copy LICENSE**
 
-```bash
+```
 cp LICENSE packages/core/LICENSE
 ```
 
-- [ ] **Step 3: Run full check suite**
+*   **Step 3: Run full check suite**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core check
 pnpm --filter @tw199501/specsnap-core test
 pnpm --filter @tw199501/specsnap-core build
@@ -1142,51 +1162,51 @@ node scripts/check-line-endings.mjs
 
 All 4 must PASS. Fix any failure before publishing.
 
-- [ ] **Step 4: Inspect the build output**
+*   **Step 4: Inspect the build output**
 
-```bash
+```
 ls packages/core/dist/
 cat packages/core/package.json | grep -E '"main"|"module"|"types"|"version"'
 ```
 
-Expected dist files: `index.cjs`, `index.cjs.map`, `index.mjs`, `index.mjs.map`, `index.d.ts`, `index.d.cts`.
+Expected dist files: `index.cjs`, `index.cjs.map`, `index.mjs`, `index.mjs.map`, `index.d.ts`, `index.d.cts`.  
 Expected `"version": "0.0.1"`.
 
-- [ ] **Step 5: Login to npm (one-time)**
+*   **Step 5: Login to npm (one-time)**
 
-```bash
+```
 npm whoami
 ```
 
 If not logged in:
 
-```bash
+```
 npm login
 ```
 
 Expected: username printed.
 
-- [ ] **Step 6: Publish**
+*   **Step 6: Publish**
 
-```bash
+```
 cd packages/core
 npm publish --access public
 ```
 
 Expected output: `+ @tw199501/specsnap-core@0.0.1`.
 
-- [ ] **Step 7: Verify the publication**
+*   **Step 7: Verify the publication**
 
-```bash
+```
 cd ../..
 npm view @tw199501/specsnap-core version
 ```
 
 Expected: `0.0.1`.
 
-- [ ] **Step 8: Tag release + commit**
+*   **Step 8: Tag release + commit**
 
-```bash
+```
 git add packages/core/README.md packages/core/LICENSE
 git commit -m "docs(core): add package README for 0.0.1 publish"
 git tag -a core@0.0.1 -m "specsnap-core 0.0.1 — first publish"
@@ -1196,18 +1216,18 @@ git tag -a core@0.0.1 -m "specsnap-core 0.0.1 — first publish"
 
 ## Summary: what ships in `0.0.1`
 
-- Capture a single DOM element into a Frame with viewport context
-- Box model, typography, background — all computed values
-- Bilingual annotations (50+ CSS properties)
-- Markdown serializer with YAML frontmatter
-- JSON serializer (pretty / compact)
-- 26+ unit tests via vitest + happy-dom
-- LF-clean, MIT-licensed, TypeScript strict
-- Published to npm, installable via `pnpm add @tw199501/specsnap-core`
+*   Capture a single DOM element into a Frame with viewport context
+*   Box model, typography, background — all computed values
+*   Bilingual annotations (50+ CSS properties)
+*   Markdown serializer with YAML frontmatter
+*   JSON serializer (pretty / compact)
+*   26+ unit tests via vitest + happy-dom
+*   LF-clean, MIT-licensed, TypeScript strict
+*   Published to npm, installable via `pnpm add @tw199501/specsnap-core`
 
 ## What's next (subsequent plans)
 
-1. **Multi-frame capture UX** — core already supports `captureSession([a, b, c])`; next plan wires overlay click-to-capture + queue management
-2. **Screenshot annotator** — integrate `dom-to-image-more` for paired PNG export
-3. **Browser extension** — wrap core with hotkey activation + Shadow DOM overlay UI
-4. **Vite plugin (V2)** — source-map injection for `file:line` hints
+1.  **Multi-frame capture UX** — core already supports `captureSession([a, b, c])`; next plan wires overlay click-to-capture + queue management
+2.  **Screenshot annotator** — integrate `dom-to-image-more` for paired PNG export
+3.  **Browser extension** — wrap core with hotkey activation + Shadow DOM overlay UI
+4.  **Vite plugin (V2)** — source-map injection for `file:line` hints

@@ -47,13 +47,16 @@ specsnap/
 ### Task 1: Initialize git repo + root files
 
 **Files:**
-- Create: `E:\source\specsnap\.gitignore`
-- Create: `E:\source\specsnap\LICENSE`
-- Create: `E:\source\specsnap\README.md`
 
-- [ ] **Step 1: Init git in project root**
+Create: `E:\source\specsnap\.gitignore`
 
-```bash
+Create: `E:\source\specsnap\LICENSE`
+
+Create: `E:\source\specsnap\README.md`
+
+ **Step 1: Init git in project root**
+
+```
 cd /e/source/specsnap
 git init
 git branch -M main
@@ -61,7 +64,7 @@ git branch -M main
 
 Expected: `Initialized empty Git repository in .../specsnap/.git/`
 
-- [ ] **Step 2: Write `.gitignore`**
+*   **Step 2: Write** `**.gitignore**`
 
 ```
 node_modules/
@@ -76,7 +79,7 @@ coverage/
 .pnpm-store/
 ```
 
-- [ ] **Step 3: Write `LICENSE` (MIT)**
+*   **Step 3: Write** `**LICENSE**` **(MIT)**
 
 ```
 MIT License
@@ -102,9 +105,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-- [ ] **Step 4: Write `README.md`**
+*   **Step 4: Write** `**README.md**`
 
-```markdown
+```
 # SpecSnap
 
 > A zero-loss translator between "human inspects UI visually" and "AI modifies UI precisely"
@@ -128,9 +131,9 @@ SOFTWARE.
 [MIT](./LICENSE) © tw199501
 ```
 
-- [ ] **Step 5: Commit**
+*   **Step 5: Commit**
 
-```bash
+```
 git add .gitignore LICENSE README.md
 git commit -m "chore: initialize repo with MIT license and README"
 ```
@@ -140,12 +143,16 @@ git commit -m "chore: initialize repo with MIT license and README"
 ### Task 2: LF line-ending enforcement (4 layers)
 
 **Files:**
-- Create: `E:\source\specsnap\.gitattributes`
-- Create: `E:\source\specsnap\.editorconfig`
-- Create: `E:\source\specsnap\.vscode\settings.json`
-- Create: `E:\source\specsnap\scripts\check-line-endings.mjs`
 
-- [ ] **Step 1: Write `.gitattributes`** (Layer 1 — git source of truth)
+Create: `E:\source\specsnap\.gitattributes`
+
+Create: `E:\source\specsnap\.editorconfig`
+
+Create: `E:\source\specsnap\.vscode\settings.json`
+
+Create: `E:\source\specsnap\scripts\check-line-endings.mjs`
+
+ **Step 1: Write** `**.gitattributes**` (Layer 1 — git source of truth)
 
 ```
 * text=auto eol=lf
@@ -159,9 +166,9 @@ git commit -m "chore: initialize repo with MIT license and README"
 *.ttf binary
 ```
 
-- [ ] **Step 2: Write `.editorconfig`** (Layer 2 — editor baseline)
+*   **Step 2: Write** `**.editorconfig**` (Layer 2 — editor baseline)
 
-```ini
+```
 root = true
 
 [*]
@@ -176,9 +183,9 @@ trim_trailing_whitespace = true
 trim_trailing_whitespace = false
 ```
 
-- [ ] **Step 3: Write `.vscode/settings.json`** (Layer 3 — VS Code per-project)
+*   **Step 3: Write** `**.vscode/settings.json**` (Layer 3 — VS Code per-project)
 
-```json
+```
 {
   "files.eol": "\n",
   "files.encoding": "utf8",
@@ -189,9 +196,9 @@ trim_trailing_whitespace = false
 }
 ```
 
-- [ ] **Step 4: Write `scripts/check-line-endings.mjs`** (Layer 4 — CI guard)
+*   **Step 4: Write** `**scripts/check-line-endings.mjs**` (Layer 4 — CI guard)
 
-```js
+```
 #!/usr/bin/env node
 // Check that all git-tracked text files use LF line endings.
 // Exits 1 if any CRLF is found. Uses execFileSync to avoid shell interpolation.
@@ -228,9 +235,9 @@ if (offenders.length > 0) {
 console.log(`All ${tracked.length} tracked text files use LF.`);
 ```
 
-- [ ] **Step 5: Run the checker**
+*   **Step 5: Run the checker**
 
-```bash
+```
 node scripts/check-line-endings.mjs
 ```
 
@@ -238,14 +245,14 @@ Expected: `All N tracked text files use LF.`
 
 If any offenders reported:
 
-```bash
+```
 git add --renormalize .
 node scripts/check-line-endings.mjs
 ```
 
-- [ ] **Step 6: Commit**
+*   **Step 6: Commit**
 
-```bash
+```
 git add .gitattributes .editorconfig .vscode/settings.json scripts/check-line-endings.mjs
 git commit -m "chore: enforce LF line endings via 4-layer mechanism"
 ```
@@ -255,13 +262,16 @@ git commit -m "chore: enforce LF line endings via 4-layer mechanism"
 ### Task 3: pnpm monorepo root setup
 
 **Files:**
-- Create: `E:\source\specsnap\package.json`
-- Create: `E:\source\specsnap\pnpm-workspace.yaml`
-- Create: `E:\source\specsnap\tsconfig.base.json`
 
-- [ ] **Step 1: Write `package.json`**
+Create: `E:\source\specsnap\package.json`
 
-```json
+Create: `E:\source\specsnap\pnpm-workspace.yaml`
+
+Create: `E:\source\specsnap\tsconfig.base.json`
+
+ **Step 1: Write** `**package.json**`
+
+```
 {
   "name": "specsnap-workspace",
   "version": "0.0.0",
@@ -285,16 +295,16 @@ git commit -m "chore: enforce LF line endings via 4-layer mechanism"
 }
 ```
 
-- [ ] **Step 2: Write `pnpm-workspace.yaml`**
+*   **Step 2: Write** `**pnpm-workspace.yaml**`
 
-```yaml
+```
 packages:
   - 'packages/*'
 ```
 
-- [ ] **Step 3: Write `tsconfig.base.json`**
+*   **Step 3: Write** `**tsconfig.base.json**`
 
-```json
+```
 {
   "compilerOptions": {
     "target": "ES2022",
@@ -320,17 +330,17 @@ packages:
 }
 ```
 
-- [ ] **Step 4: Install root devDependencies**
+*   **Step 4: Install root devDependencies**
 
-```bash
+```
 pnpm install
 ```
 
 Expected: `pnpm-lock.yaml` generated, TypeScript installed.
 
-- [ ] **Step 5: Verify EOL + commit**
+*   **Step 5: Verify EOL + commit**
 
-```bash
+```
 node scripts/check-line-endings.mjs
 git add package.json pnpm-workspace.yaml tsconfig.base.json pnpm-lock.yaml
 git commit -m "chore: configure pnpm workspace with shared tsconfig base"
@@ -343,14 +353,18 @@ git commit -m "chore: configure pnpm workspace with shared tsconfig base"
 ### Task 4: Core package scaffolding
 
 **Files:**
-- Create: `E:\source\specsnap\packages\core\package.json`
-- Create: `E:\source\specsnap\packages\core\tsconfig.json`
-- Create: `E:\source\specsnap\packages\core\tsup.config.ts`
-- Create: `E:\source\specsnap\packages\core\src\index.ts` (placeholder)
 
-- [ ] **Step 1: Write `packages/core/package.json`**
+Create: `E:\source\specsnap\packages\core\package.json`
 
-```json
+Create: `E:\source\specsnap\packages\core\tsconfig.json`
+
+Create: `E:\source\specsnap\packages\core\tsup.config.ts`
+
+Create: `E:\source\specsnap\packages\core\src\index.ts` (placeholder)
+
+ **Step 1: Write** `**packages/core/package.json**`
+
+```
 {
   "name": "@tw199501/specsnap-core",
   "version": "0.0.1",
@@ -395,11 +409,11 @@ git commit -m "chore: configure pnpm workspace with shared tsconfig base"
 }
 ```
 
-- [ ] **Step 2: Write `packages/core/tsconfig.json`**
+*   **Step 2: Write** `**packages/core/tsconfig.json**`
 
 Note: we intentionally omit `rootDir` because tsup (not tsc) emits the build, and `rootDir` would make the IDE flag `tests/**/*.ts` as "not under rootDir" even though `tsc --noEmit` ignores the violation. Simpler to let TypeScript infer rootDir from `include`.
 
-```json
+```
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
@@ -411,11 +425,11 @@ Note: we intentionally omit `rootDir` because tsup (not tsc) emits the build, an
 }
 ```
 
-- [ ] **Step 3: Write `packages/core/tsup.config.ts`**
+*   **Step 3: Write** `**packages/core/tsup.config.ts**`
 
 Note: `outExtension` is required because `package.json` has `"type": "module"` — without it, tsup emits `.js` for the ESM build and the `"module"` / `exports.import` paths that point to `.mjs` would 404.
 
-```ts
+```
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
@@ -433,15 +447,15 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 4: Write placeholder `packages/core/src/index.ts`**
+*   **Step 4: Write placeholder** `**packages/core/src/index.ts**`
 
-```ts
+```
 export const VERSION = '0.0.1';
 ```
 
-- [ ] **Step 5: Install + smoke build**
+*   **Step 5: Install + smoke build**
 
-```bash
+```
 pnpm install
 pnpm --filter @tw199501/specsnap-core build
 ls packages/core/dist/
@@ -449,9 +463,9 @@ ls packages/core/dist/
 
 Expected files: `index.mjs`, `index.cjs`, `index.d.ts`, plus `.map` files.
 
-- [ ] **Step 6: Commit**
+*   **Step 6: Commit**
 
-```bash
+```
 git add packages/core/ pnpm-lock.yaml
 git commit -m "feat(core): scaffold @tw199501/specsnap-core package with tsup build"
 ```
@@ -461,12 +475,14 @@ git commit -m "feat(core): scaffold @tw199501/specsnap-core package with tsup bu
 ### Task 5: Core domain types
 
 **Files:**
-- Create: `E:\source\specsnap\packages\core\src\types.ts`
-- Modify: `E:\source\specsnap\packages\core\src\index.ts`
 
-- [ ] **Step 1: Write `src/types.ts`**
+Create: `E:\source\specsnap\packages\core\src\types.ts`
 
-```ts
+Modify: `E:\source\specsnap\packages\core\src\index.ts`
+
+ **Step 1: Write** `**src/types.ts**`
+
+```
 /**
  * SCHEMA VERSION — bump on any breaking change to exported types.
  * Consumers check Session.schemaVersion for compatibility.
@@ -561,9 +577,9 @@ export interface SerializeOptions {
 }
 ```
 
-- [ ] **Step 2: Update `src/index.ts` to re-export**
+*   **Step 2: Update** `**src/index.ts**` **to re-export**
 
-```ts
+```
 export const VERSION = '0.0.1';
 
 export {
@@ -582,26 +598,26 @@ export {
 } from './types.js';
 ```
 
-- [ ] **Step 3: Type-check + build**
+*   **Step 3: Type-check + build**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core check
 pnpm --filter @tw199501/specsnap-core build
 ```
 
 Both must pass zero errors.
 
-- [ ] **Step 4: Inspect emitted `.d.ts`**
+*   **Step 4: Inspect emitted** `**.d.ts**`
 
-```bash
+```
 cat packages/core/dist/index.d.ts | head -40
 ```
 
 Expected: re-exports visible, including `SCHEMA_VERSION`, `Frame`, `Session`.
 
-- [ ] **Step 5: Commit**
+*   **Step 5: Commit**
 
-```bash
+```
 git add packages/core/src/
 git commit -m "feat(core): define Frame, Session, BoxModel and related types"
 ```
@@ -612,12 +628,12 @@ git commit -m "feat(core): define Frame, Session, BoxModel and related types"
 
 After completing all Tasks 1-5, the state is:
 
-- ✅ git repo initialized with MIT license and README
-- ✅ LF enforcement live (4 layers)
-- ✅ pnpm workspace configured
-- ✅ `@tw199501/specsnap-core` scaffolded
-- ✅ Domain types (Frame, Session, BoxModel, Typography, Background, ViewportETC) declared
-- ✅ `pnpm --filter @tw199501/specsnap-core build` produces valid ESM + CJS + .d.ts
-- ✅ 5 git commits; zero tests yet (tests start in Part 2)
+*   ✅ git repo initialized with MIT license and README
+*   ✅ LF enforcement live (4 layers)
+*   ✅ pnpm workspace configured
+*   ✅ `@tw199501/specsnap-core` scaffolded
+*   ✅ Domain types (Frame, Session, BoxModel, Typography, Background, ViewportETC) declared
+*   ✅ `pnpm --filter @tw199501/specsnap-core build` produces valid ESM + CJS + .d.ts
+*   ✅ 5 git commits; zero tests yet (tests start in Part 2)
 
 **Next:** proceed to `2026-04-19-mvp-core-plan-part-2.md` for capture engine, bilingual lexicon, serializers, playground smoke test, and npm publish.
