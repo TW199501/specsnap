@@ -4,7 +4,43 @@
   <meta charset="utf-8">
   <title>SpecSnap Playground</title>
   <style>
-    body { font-family: Inter, sans-serif; padding: 40px; }
+    body {
+      font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+      padding: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    h1 { margin-top: 0; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: #f4f4f7;
+      border-radius: 8px;
+    }
+    #hint {
+      font-size: 14px;
+      color: #555;
+      flex: 1;
+    }
+    .targets {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+    }
+    body.inspecting .targets {
+      cursor: crosshair;
+      border-color: #ff5000;
+      background: #fff5ef;
+    }
+    body.inspecting .targets * { cursor: crosshair !important; }
     button#save {
       width: 120px; height: 34px;
       padding: 4px 12px; margin: 8px;
@@ -12,17 +48,86 @@
       color: #fff; background: #ff5000;
       border: none; border-radius: 6px; cursor: pointer;
     }
-    pre { background: #f4f4f7; padding: 16px; border-radius: 6px; max-height: 400px; overflow: auto; }
+    input#username {
+      width: 220px; height: 34px;
+      padding: 4px 12px;
+      font-size: 13px;
+      border: 1px solid #6b7280;
+      border-radius: 6px;
+      background: #f4f4f7;
+    }
+    a#docs {
+      color: #2d6cdf;
+      font-size: 14px;
+      text-decoration: underline;
+      padding: 8px;
+    }
+    .card {
+      padding: 16px;
+      background: #0f0f1a;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.5;
+      width: 200px;
+    }
+    #start {
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+    }
+    #start:hover { background: #f4f4f7; }
+    #start.active { background: #ff5000; color: #fff; border-color: #ff5000; }
+    .output-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .output-col h2 { font-size: 14px; text-transform: uppercase; color: #666; margin: 0 0 8px; }
+    pre {
+      background: #f4f4f7;
+      padding: 16px;
+      border-radius: 6px;
+      max-height: 500px;
+      overflow: auto;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 0;
+    }
   </style>
 </head>
 <body>
   <h1>SpecSnap Playground</h1>
-  <button id="save">Save</button>
-  <button id="inspect">Inspect Save button</button>
-  <h2>Output (Markdown)</h2>
-  <pre id="md"></pre>
-  <h2>Output (JSON)</h2>
-  <pre id="json"></pre>
+
+  <div class="controls">
+    <button id="start">Start inspect mode</button>
+    <div id="hint">Click "Start inspect mode", then click any element inside the dashed box below. Press ESC to cancel.</div>
+  </div>
+
+  <div class="targets">
+    <button id="save">Save</button>
+    <input id="username" type="text" placeholder="username">
+    <a id="docs" href="#">Read the docs</a>
+    <div class="card">
+      A dark card with some <strong>styled text</strong> for inspection.
+    </div>
+  </div>
+
+  <div class="output-row">
+    <div class="output-col">
+      <h2>Output (Markdown)</h2>
+      <pre id="md"></pre>
+    </div>
+    <div class="output-col">
+      <h2>Output (JSON)</h2>
+      <pre id="json"></pre>
+    </div>
+  </div>
+
   <script type="module" src="./main.ts"></script>
 </body>
 </html>
