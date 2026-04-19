@@ -2,7 +2,7 @@
  * SCHEMA VERSION — bump on any breaking change to exported types.
  * Consumers check Session.schemaVersion for compatibility.
  */
-export const SCHEMA_VERSION = '0.0.1';
+export const SCHEMA_VERSION = '0.0.2';
 
 /** Absolute pixel rectangle relative to the document (not the viewport). */
 export interface Rect {
@@ -72,6 +72,24 @@ export interface Frame {
   background: Background;
 }
 
+export type GapAxis = 'horizontal' | 'vertical';
+
+/**
+ * The computed distance between two captured frames along a shared axis.
+ * - horizontal: frames share a Y range (side-by-side); `px` is the gap along X
+ * - vertical: frames share an X range (stacked); `px` is the gap along Y
+ * If two frames overlap or are diagonally unrelated, no Gap is emitted.
+ */
+export interface Gap {
+  /** 1-based index of the frame on the "from" side. */
+  from: number;
+  /** 1-based index of the frame on the "to" side. */
+  to: number;
+  axis: GapAxis;
+  /** The distance in CSS pixels between the two frames along the shared axis. */
+  px: number;
+}
+
 /** Session envelope — wraps 1..N frames with shared viewport context. */
 export interface Session {
   schemaVersion: typeof SCHEMA_VERSION;
@@ -82,6 +100,8 @@ export interface Session {
   viewport: Viewport;
   scroll: ScrollPosition;
   frames: Frame[];
+  /** Distance between every consecutive pair of frames. Empty when <2 frames. */
+  gaps: Gap[];
 }
 
 export interface SerializeOptions {
