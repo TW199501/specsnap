@@ -14,3 +14,5 @@ export {
   type Typography,
   type Viewport
 } from './types.js';
+
+export { captureScroll, captureViewport } from './viewport.js';
