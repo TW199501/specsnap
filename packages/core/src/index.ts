@@ -24,3 +24,6 @@ export { captureElement, captureSession } from './capture.js';
 export { toMarkdown } from './serialize-md.js';
 
 export { toJSON } from './serialize-json.js';
+
+export { computeGap } from './gap.js';
+export type { Gap, GapAxis } from './types.js';
