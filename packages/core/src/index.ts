@@ -20,3 +20,5 @@ export { captureScroll, captureViewport } from './viewport.js';
 export { annotate, DEFAULT_LEXICON } from './lexicon.js';
 
 export { captureElement, captureSession } from './capture.js';
+
+export { toMarkdown } from './serialize-md.js';
