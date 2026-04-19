@@ -82,6 +82,30 @@
     }
     #start:hover { background: #f4f4f7; }
     #start.active { background: #ff5000; color: #fff; border-color: #ff5000; }
+    .box-model-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+    #box-model {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px;
+    }
+    #box-model:empty::before {
+      content: 'Box model will render here after you capture an element.';
+      display: block;
+      width: 360px;
+      height: 220px;
+      padding: 90px 20px;
+      box-sizing: border-box;
+      text-align: center;
+      color: #888;
+      font-size: 13px;
+    }
     .output-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -117,11 +141,18 @@
     </div>
   </div>
 
-  <div class="output-row">
+  <div class="box-model-row">
+    <div>
+      <h2 style="font-size:14px;text-transform:uppercase;color:#666;margin:0 0 8px">Box Model</h2>
+      <div id="box-model"></div>
+    </div>
     <div class="output-col">
       <h2>Output (Markdown)</h2>
       <pre id="md"></pre>
     </div>
+  </div>
+
+  <div class="output-row">
     <div class="output-col">
       <h2>Output (JSON)</h2>
       <pre id="json"></pre>

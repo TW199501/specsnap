@@ -1,12 +1,15 @@
 import { captureSession, toJSON, toMarkdown } from '@tw199501/specsnap-core';
 
+import { clearOverlay, renderBoxModel, renderOverlay } from './visualizer.js';
+
 const startBtn = document.getElementById('start') as HTMLButtonElement | null;
 const hintEl = document.getElementById('hint');
 const mdEl = document.getElementById('md');
 const jsonEl = document.getElementById('json');
+const boxModelEl = document.getElementById('box-model');
 const targetsEl = document.querySelector('.targets');
 
-if (!startBtn || !hintEl || !mdEl || !jsonEl || !targetsEl) {
+if (!startBtn || !hintEl || !mdEl || !jsonEl || !boxModelEl || !targetsEl) {
   throw new Error('playground: required elements missing');
 }
 
@@ -24,6 +27,7 @@ function setInspecting(on: boolean): void {
 
 startBtn.addEventListener('click', (e) => {
   e.stopPropagation();
+  if (!inspecting) clearOverlay();
   setInspecting(!inspecting);
 });
 
@@ -38,13 +42,17 @@ document.addEventListener('click', (e) => {
   e.stopPropagation();
 
   const session = captureSession([e.target]);
+  const frame = session.frames[0]!;
+
   mdEl!.textContent = toMarkdown(session)[0] ?? '';
   jsonEl!.textContent = toJSON(session);
+  renderBoxModel(boxModelEl as HTMLElement, frame.boxModel);
+  renderOverlay(e.target);
 
   setInspecting(false);
   const tag = e.target.tagName.toLowerCase();
   const id = e.target.id ? `#${e.target.id}` : '';
-  hintEl!.textContent = `Captured: ${tag}${id}. Click "Start inspect mode" again to capture another element.`;
+  hintEl!.textContent = `Captured: ${tag}${id} · ${Math.round(frame.rect.width)} × ${Math.round(frame.rect.height)} px`;
 }, true);
 
 document.addEventListener('keydown', (e) => {
@@ -52,4 +60,25 @@ document.addEventListener('keydown', (e) => {
     setInspecting(false);
     hintEl!.textContent = 'Cancelled.';
   }
+  else if (e.key === 'Escape') {
+    clearOverlay();
+    hintEl!.textContent = 'Overlay cleared.';
+  }
 });
+
+// Keep the overlay aligned when the viewport resizes or the page scrolls while
+// an element is still highlighted.
+let lastTarget: Element | null = null;
+function refreshOverlay(): void {
+  if (lastTarget && lastTarget.isConnected) renderOverlay(lastTarget);
+}
+window.addEventListener('resize', refreshOverlay);
+window.addEventListener('scroll', refreshOverlay, { passive: true });
+
+// Track the last target so refresh can re-render.
+document.addEventListener('click', (e) => {
+  if (!(e.target instanceof Element)) return;
+  if (targetsEl!.contains(e.target) && !startBtn!.contains(e.target)) {
+    lastTarget = e.target;
+  }
+}, true);
