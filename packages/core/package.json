@@ -20,17 +20,30 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "check": "tsc --noEmit"
   },
-  "keywords": ["inspector", "dom", "ai", "llm", "devtools", "bilingual"],
+  "keywords": [
+    "inspector",
+    "dom",
+    "ai",
+    "llm",
+    "devtools",
+    "bilingual"
+  ],
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^4.1.4",
     "happy-dom": "^20.9.0",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
