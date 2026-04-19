@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { annotate, DEFAULT_LEXICON } from '../src/lexicon.js';
+import { annotate, DEFAULT_LEXICON } from './lexicon.js';
 
 describe('DEFAULT_LEXICON', () => {
   it('contains at least 50 CSS property translations', () => {

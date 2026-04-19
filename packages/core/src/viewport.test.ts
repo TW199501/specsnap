@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { captureScroll, captureViewport } from '../src/viewport.js';
+import { captureScroll, captureViewport } from './viewport.js';
 
 describe('captureViewport', () => {
   it('returns viewport width, height, and devicePixelRatio from window', () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { captureSession } from '../src/capture.js';
-import { toJSON } from '../src/serialize-json.js';
+import { captureSession } from './capture.js';
+import { toJSON } from './serialize-json.js';
 import { clearBody, makeElement, mount } from './dom-fixture.js';
 
 function setupDiv(): HTMLElement {

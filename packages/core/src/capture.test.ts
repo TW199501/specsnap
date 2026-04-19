@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { captureElement, captureSession } from '../src/capture.js';
+import { captureElement, captureSession } from './capture.js';
 import { clearBody, makeElement, mount } from './dom-fixture.js';
 
 describe('captureElement', () => {

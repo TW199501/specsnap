@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { captureSession } from '../src/capture.js';
-import { toMarkdown } from '../src/serialize-md.js';
+import { captureSession } from './capture.js';
+import { toMarkdown } from './serialize-md.js';
 import { clearBody, makeElement, mount } from './dom-fixture.js';
 
 function setupButton(): HTMLElement {
