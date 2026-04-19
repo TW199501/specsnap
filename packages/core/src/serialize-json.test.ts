@@ -30,7 +30,7 @@ describe('toJSON', () => {
   it('round-trips through JSON.parse back to the session shape', () => {
     const s = captureSession([setupDiv()]);
     const parsed = JSON.parse(toJSON(s));
-    expect(parsed.schemaVersion).toBe('0.0.1');
+    expect(parsed.schemaVersion).toBe('0.0.2');
     expect(parsed.frames).toHaveLength(1);
     expect(parsed.frames[0].index).toBe(1);
   });

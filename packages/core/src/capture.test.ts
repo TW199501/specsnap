@@ -103,7 +103,7 @@ describe('captureSession', () => {
     expect(session.frames[1]!.index).toBe(2);
     expect(session.viewport.width).toBeGreaterThan(0);
     expect(session.capturedAt).toMatch(/\d{4}-\d{2}-\d{2}T/);
-    expect(session.schemaVersion).toBe('0.0.1');
+    expect(session.schemaVersion).toBe('0.0.2');
     expect(session.id).toMatch(/^s-[a-z0-9]{6}$/);
   });
 
@@ -111,7 +111,7 @@ describe('captureSession', () => {
     const session = captureSession([]);
     expect(session.frames).toHaveLength(0);
     expect(session.viewport.width).toBeGreaterThan(0);
-    expect(session.schemaVersion).toBe('0.0.1');
+    expect(session.schemaVersion).toBe('0.0.2');
   });
 
   it('produces unique 1-based indices across many frames', () => {
