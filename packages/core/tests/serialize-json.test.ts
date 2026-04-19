@@ -42,4 +42,21 @@ describe('toJSON', () => {
     expect(parsed.viewport).toHaveProperty('height');
     expect(parsed.viewport).toHaveProperty('devicePixelRatio');
   });
+
+  it('preserves all frames with unique indices in a multi-frame session', () => {
+    clearBody();
+    const a = mount(makeElement({ tag: 'div', id: 'a' }));
+    const b = mount(makeElement({ tag: 'div', id: 'b' }));
+    const c = mount(makeElement({ tag: 'div', id: 'c' }));
+    const s = captureSession([a, b, c]);
+    const parsed = JSON.parse(toJSON(s));
+    expect(parsed.frames).toHaveLength(3);
+    expect(parsed.frames.map((f: { index: number }) => f.index)).toEqual([1, 2, 3]);
+  });
+
+  it('handles empty session without errors', () => {
+    const s = captureSession([]);
+    const parsed = JSON.parse(toJSON(s));
+    expect(parsed.frames).toEqual([]);
+  });
 });

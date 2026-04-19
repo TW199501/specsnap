@@ -62,4 +62,26 @@ describe('toMarkdown', () => {
     const [md] = toMarkdown(session);
     expect(md!).toMatch(/padding:\s+4\s+\/\s+12\s+\/\s+4\s+\/\s+12/);
   });
+
+  it('returns one markdown string per frame in a multi-frame session', () => {
+    clearBody();
+    const a = mount(makeElement({ tag: 'button', id: 'a', text: 'A' }));
+    const b = mount(makeElement({ tag: 'button', id: 'b', text: 'B' }));
+    const c = mount(makeElement({ tag: 'button', id: 'c', text: 'C' }));
+    const session = captureSession([a, b, c]);
+
+    const docs = toMarkdown(session);
+    expect(docs).toHaveLength(3);
+    expect(docs[0]!).toContain('frame: 1 of 3');
+    expect(docs[1]!).toContain('frame: 2 of 3');
+    expect(docs[2]!).toContain('frame: 3 of 3');
+    expect(docs[0]!).toContain('# Frame 1 · button#a');
+    expect(docs[1]!).toContain('# Frame 2 · button#b');
+    expect(docs[2]!).toContain('# Frame 3 · button#c');
+  });
+
+  it('returns empty array for an empty session', () => {
+    const session = captureSession([]);
+    expect(toMarkdown(session)).toEqual([]);
+  });
 });

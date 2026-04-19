@@ -50,6 +50,45 @@ describe('captureElement', () => {
     const detached = document.createElement('div');
     expect(() => captureElement(detached, 1)).toThrow(/not attached/i);
   });
+
+  it('produces a class-based name when element has no id', () => {
+    clearBody();
+    const plain = mount(makeElement({ tag: 'div', classes: ['widget', 'big'], text: 'x' }));
+    const frame = captureElement(plain, 1);
+    expect(frame.identity.id).toBeNull();
+    expect(frame.identity.name).toBe('div[text="x"]'); // text takes precedence over class in formatName
+  });
+
+  it('produces a bare tag name when element has no id, class, or text', () => {
+    clearBody();
+    const bare = mount(makeElement({ tag: 'span' }));
+    const frame = captureElement(bare, 1);
+    expect(frame.identity.name).toBe('span');
+    expect(frame.identity.id).toBeNull();
+    expect(frame.identity.classList).toEqual([]);
+  });
+
+  it('uses :nth-of-type in DOM path when sibling tags exist', () => {
+    clearBody();
+    mount(makeElement({ tag: 'p', text: 'first' }));
+    const second = mount(makeElement({ tag: 'p', text: 'second' }));
+    mount(makeElement({ tag: 'p', text: 'third' }));
+
+    const frame = captureElement(second, 1);
+    expect(frame.identity.domPath).toContain(':nth-of-type(2)');
+    expect(document.querySelector(frame.identity.domPath)).toBe(second);
+  });
+
+  it('truncates long text to 24 chars in the identity name', () => {
+    clearBody();
+    const longText = 'This is a rather long piece of text that should get truncated';
+    const el = mount(makeElement({ tag: 'p', text: longText }));
+    const frame = captureElement(el, 1);
+    // name should be p[text="..."] with at most 24 chars inside quotes
+    const match = frame.identity.name.match(/^p\[text="(.+)"\]$/);
+    expect(match).not.toBeNull();
+    expect(match![1]!.length).toBeLessThanOrEqual(24);
+  });
 });
 
 describe('captureSession', () => {
@@ -66,5 +105,23 @@ describe('captureSession', () => {
     expect(session.capturedAt).toMatch(/\d{4}-\d{2}-\d{2}T/);
     expect(session.schemaVersion).toBe('0.0.1');
     expect(session.id).toMatch(/^s-[a-z0-9]{6}$/);
+  });
+
+  it('handles an empty elements array', () => {
+    const session = captureSession([]);
+    expect(session.frames).toHaveLength(0);
+    expect(session.viewport.width).toBeGreaterThan(0);
+    expect(session.schemaVersion).toBe('0.0.1');
+  });
+
+  it('produces unique 1-based indices across many frames', () => {
+    clearBody();
+    const els = [];
+    for (let i = 0; i < 5; i++) {
+      els.push(mount(makeElement({ tag: 'div', id: `e${i}`, text: `Item ${i}` })));
+    }
+    const session = captureSession(els);
+    expect(session.frames).toHaveLength(5);
+    expect(session.frames.map((f) => f.index)).toEqual([1, 2, 3, 4, 5]);
   });
 });
