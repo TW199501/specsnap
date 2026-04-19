@@ -397,11 +397,12 @@ git commit -m "chore: configure pnpm workspace with shared tsconfig base"
 
 - [ ] **Step 2: Write `packages/core/tsconfig.json`**
 
+Note: we intentionally omit `rootDir` because tsup (not tsc) emits the build, and `rootDir` would make the IDE flag `tests/**/*.ts` as "not under rootDir" even though `tsc --noEmit` ignores the violation. Simpler to let TypeScript infer rootDir from `include`.
+
 ```json
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./src",
     "outDir": "./dist",
     "types": ["vitest/globals"]
   },
