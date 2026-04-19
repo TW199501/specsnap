@@ -1,0 +1,21 @@
+{
+  "name": "specsnap-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "SpecSnap monorepo root",
+  "license": "MIT",
+  "author": "tw199501",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "check:eol": "node scripts/check-line-endings.mjs",
+    "check": "pnpm check:eol && pnpm -r check"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
