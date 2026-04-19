@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SpecSnap Playground</title>
+  <style>
+    body { font-family: Inter, sans-serif; padding: 40px; }
+    button#save {
+      width: 120px; height: 34px;
+      padding: 4px 12px; margin: 8px;
+      font-size: 13px; font-weight: 500;
+      color: #fff; background: #ff5000;
+      border: none; border-radius: 6px; cursor: pointer;
+    }
+    pre { background: #f4f4f7; padding: 16px; border-radius: 6px; max-height: 400px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>SpecSnap Playground</h1>
+  <button id="save">Save</button>
+  <button id="inspect">Inspect Save button</button>
+  <h2>Output (Markdown)</h2>
+  <pre id="md"></pre>
+  <h2>Output (JSON)</h2>
+  <pre id="json"></pre>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>
