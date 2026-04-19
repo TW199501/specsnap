@@ -1,0 +1,42 @@
+{
+  "name": "@tw199501/specsnap-core",
+  "version": "0.0.1",
+  "description": "Core capture and serialization library for SpecSnap — the AI-friendly DOM inspector",
+  "license": "MIT",
+  "author": "tw199501",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tw199501/specsnap.git",
+    "directory": "packages/core"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "tsc --noEmit"
+  },
+  "keywords": ["inspector", "dom", "ai", "llm", "devtools", "bilingual"],
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "happy-dom": "^15.11.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
