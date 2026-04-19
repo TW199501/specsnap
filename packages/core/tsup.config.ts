@@ -8,5 +8,8 @@ export default defineConfig({
   sourcemap: true,
   treeshake: true,
   target: 'es2022',
-  outDir: 'dist'
+  outDir: 'dist',
+  outExtension({ format }) {
+    return { js: format === 'esm' ? '.mjs' : '.cjs' };
+  }
 });
