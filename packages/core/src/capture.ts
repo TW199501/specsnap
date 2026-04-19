@@ -5,10 +5,12 @@ import type {
   ElementIdentity,
   FourSides,
   Frame,
+  Gap,
   Rect,
   Session,
   Typography
 } from './types.js';
+import { computeGap } from './gap.js';
 import { captureScroll, captureViewport } from './viewport.js';
 
 /**
@@ -38,6 +40,19 @@ export function captureElement(el: Element, index: number): Frame {
 
 /** Capture a whole session: N elements + viewport context. */
 export function captureSession(elements: readonly Element[]): Session {
+  const frames = elements.map((el, i) => captureElement(el, i + 1));
+
+  const gaps: Gap[] = [];
+  for (let i = 1; i < frames.length; i++) {
+    const g = computeGap(
+      frames[i - 1]!.index,
+      frames[i]!.index,
+      frames[i - 1]!.rect,
+      frames[i]!.rect
+    );
+    if (g) gaps.push(g);
+  }
+
   return {
     schemaVersion: SCHEMA_VERSION,
     id: makeSessionId(),
@@ -46,7 +61,8 @@ export function captureSession(elements: readonly Element[]): Session {
     pageTitle: typeof document === 'undefined' ? '' : document.title,
     viewport: captureViewport(),
     scroll: captureScroll(),
-    frames: elements.map((el, i) => captureElement(el, i + 1))
+    frames,
+    gaps
   };
 }
 
