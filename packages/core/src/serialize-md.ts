@@ -61,6 +61,15 @@ function renderFrame(
     '## 背景 (Background)',
     `- background-color: ${background.color}${a('background-color')}`,
     `- border-radius: ${background.borderRadius.join(' / ')}${a('border-radius')}`,
-    ''
+    '',
+    ...(frame.index === 1 && session.gaps.length > 0
+      ? [
+          '## 間距 (Gaps)',
+          ...session.gaps.map(
+            (g) => `- **Frame ${g.from} → Frame ${g.to}**: ${g.px}px ${g.axis} (${g.axis === 'horizontal' ? '水平間距' : '垂直間距'})`
+          ),
+          ''
+        ]
+      : [])
   ].join('\n');
 }

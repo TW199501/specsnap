@@ -84,4 +84,43 @@ describe('toMarkdown', () => {
     const session = captureSession([]);
     expect(toMarkdown(session)).toEqual([]);
   });
+
+  it('renders a gaps section on frame 1 when session.gaps is non-empty', () => {
+    const el = setupButton();
+    const session = captureSession([el]);
+    const sessionWithGaps: typeof session = {
+      ...session,
+      frames: [...session.frames, { ...session.frames[0]!, index: 2 }],
+      gaps: [
+        { from: 1, to: 2, axis: 'horizontal', px: 16 }
+      ]
+    };
+    const docs = toMarkdown(sessionWithGaps);
+    const first = docs[0]!;
+
+    expect(first).toContain('## 間距 (Gaps)');
+    expect(first).toContain('Frame 1 → Frame 2');
+    expect(first).toContain('horizontal');
+    expect(first).toContain('16');
+    expect(first).toContain('水平間距');
+  });
+
+  it('does not render gaps section on frames after the first', () => {
+    const el = setupButton();
+    const session = captureSession([el]);
+    const sessionWithGaps: typeof session = {
+      ...session,
+      frames: [...session.frames, { ...session.frames[0]!, index: 2 }],
+      gaps: [{ from: 1, to: 2, axis: 'vertical', px: 8 }]
+    };
+    const docs = toMarkdown(sessionWithGaps);
+    expect(docs[1]!).not.toContain('間距 (Gaps)');
+  });
+
+  it('omits gaps section entirely when session has no gaps', () => {
+    const el = setupButton();
+    const session = captureSession([el]);
+    const [md] = toMarkdown(session);
+    expect(md!).not.toContain('間距 (Gaps)');
+  });
 });
