@@ -36,7 +36,7 @@ SpecSnap removes step 2. You click what's wrong. AI reads structured data that c
 
 | Package | Status | Description |
 |---------|--------|-------------|
-| [`@tw199501/specsnap-core`](./packages/core) | 🚧 0.0.1 about to ship | TypeScript library: capture + serialize (MD / JSON) |
+| [`@tw199501/specsnap-core`](./packages/core) | ✅ 0.0.2 | TypeScript library: capture + serialize (MD / JSON) |
 | `specsnap-extension` | 📋 planned | Chrome / Edge / Firefox extension wrapping core |
 | [`apps/playground`](./apps/playground) | ✅ Vite demo | Multi-select inspector demo (see screenshot above) |
 

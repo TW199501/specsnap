@@ -34,6 +34,10 @@ console.log(mdPerFrame.join('\n\n---\n\n'));
 const json = toJSON(session);
 ```
 
+## What you get per session (beyond frames)
+
+- **Gaps** — every consecutive pair of frames that shares an axis produces a `Gap { from, to, axis, px }` entry. AI sees spacing info as structured data, not visual-only.
+
 ## What you get per frame
 
 Every captured element produces a `Frame` object containing:
@@ -81,7 +85,7 @@ The built-in bilingual lexicon — 56 CSS properties with Traditional Chinese tr
 🚧 **Pre-alpha (v0.0.x).** Schema may change. Locking in at v1.0.
 
 Planned for upcoming versions:
-- `v0.0.2` — inter-element gap distances in the session schema
+- `v0.0.2` **(current)** — inter-element gap distances in the session schema. See the "間距 (Gaps)" section in Markdown output.
 - Later — `dom-to-image-more` integration for annotated screenshot export
 - Later — component tree awareness (Vue / React)
 
