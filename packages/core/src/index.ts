@@ -16,3 +16,5 @@ export {
 } from './types.js';
 
 export { captureScroll, captureViewport } from './viewport.js';
+
+export { annotate, DEFAULT_LEXICON } from './lexicon.js';
