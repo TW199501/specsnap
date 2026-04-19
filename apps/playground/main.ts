@@ -1,4 +1,5 @@
 import { captureSession, toJSON, toMarkdown } from '@tw199501/specsnap-core';
+import type { Gap } from '@tw199501/specsnap-core';
 
 import { clearOverlay, renderBoxModels, renderOverlay } from './visualizer.js';
 
@@ -16,6 +17,7 @@ if (!startBtn || !clearBtn || !hintEl || !mdEl || !jsonEl || !boxModelEl || !tar
 
 let inspecting = false;
 let selections: Element[] = [];
+let lastGaps: Gap[] = [];
 
 function updateStartLabel(): void {
   if (inspecting) {
@@ -46,10 +48,12 @@ function renderOutputs(): void {
     jsonEl!.textContent = '';
     removeChildrenOf(boxModelEl as HTMLElement);
     clearOverlay();
+    lastGaps = [];
     return;
   }
 
   const session = captureSession(selections);
+  lastGaps = session.gaps;
   const mdParts = toMarkdown(session);
   mdEl!.textContent = mdParts.join('\n\n━━━━━━━━━━━━━━━━━━━━━━━\n\n');
   jsonEl!.textContent = toJSON(session);
@@ -64,7 +68,7 @@ function renderOutputs(): void {
     }))
   );
 
-  renderOverlay(selections);
+  renderOverlay(selections, session.gaps);
 }
 
 function removeChildrenOf(el: HTMLElement): void {
@@ -130,8 +134,8 @@ document.addEventListener('keydown', (e) => {
 
 // Keep overlay aligned during scroll / resize while selections exist.
 window.addEventListener('resize', () => {
-  if (selections.length) renderOverlay(selections);
+  if (selections.length) renderOverlay(selections, lastGaps);
 });
 window.addEventListener('scroll', () => {
-  if (selections.length) renderOverlay(selections);
+  if (selections.length) renderOverlay(selections, lastGaps);
 }, { passive: true });

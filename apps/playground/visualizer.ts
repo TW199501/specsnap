@@ -11,6 +11,8 @@
 // Pure DOM + SVG. No runtime deps. The multi-select + gap visualization is
 // the differentiator from market tools (which only capture one element).
 
+import type { Gap } from '@tw199501/specsnap-core';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const STROKE_SELECTED = '#2563eb'; // blue
@@ -138,31 +140,18 @@ function toBounds(r: DOMRect): RectBounds {
 }
 
 /**
- * Draw a horizontal or vertical distance marker between two sibling rects.
- * Used to show the gap between multiple captured frames.
+ * Draw a horizontal or vertical distance marker between two sibling rects,
+ * using gap metadata (axis + px) from the core schema instead of recomputing.
  */
-function drawGap(svg: SVGElement, a: RectBounds, b: RectBounds): void {
-  const overlapsY = a.top < b.bottom && b.top < a.bottom;
-  const overlapsX = a.left < b.right && b.left < a.right;
-
-  if (overlapsY && !overlapsX) {
-    // Horizontal gap — a is left of b, or b is left of a.
+function drawGapFromSchema(svg: SVGElement, a: RectBounds, b: RectBounds, gap: Gap): void {
+  if (gap.axis === 'horizontal') {
     const leftRect = a.right <= b.left ? a : b;
     const rightRect = a.right <= b.left ? b : a;
-    const gap = rightRect.left - leftRect.right;
-    if (gap <= 0) return;
     const y = (Math.max(a.top, b.top) + Math.min(a.bottom, b.bottom)) / 2;
-    const line = createSvg('line', {
-      x1: leftRect.right,
-      y1: y,
-      x2: rightRect.left,
-      y2: y,
-      stroke: STROKE_GAP,
-      'stroke-width': 1.5,
-      'stroke-dasharray': '4 3'
-    });
-    svg.appendChild(line);
-    // end caps
+    svg.appendChild(createSvg('line', {
+      x1: leftRect.right, y1: y, x2: rightRect.left, y2: y,
+      stroke: STROKE_GAP, 'stroke-width': 1.5, 'stroke-dasharray': '4 3'
+    }));
     svg.appendChild(createSvg('line', {
       x1: leftRect.right, y1: y - 5, x2: leftRect.right, y2: y + 5,
       stroke: STROKE_GAP, 'stroke-width': 1.5
@@ -172,20 +161,16 @@ function drawGap(svg: SVGElement, a: RectBounds, b: RectBounds): void {
       stroke: STROKE_GAP, 'stroke-width': 1.5
     }));
     const mid = (leftRect.right + rightRect.left) / 2;
-    addLabel(svg, `${Math.round(gap)}px`, mid, y - 6, FILL_GAP, 'middle');
+    addLabel(svg, `${gap.px}px`, mid, y - 6, FILL_GAP, 'middle');
   }
-  else if (overlapsX && !overlapsY) {
-    // Vertical gap — a is above b, or b is above a.
+  else {
     const topRect = a.bottom <= b.top ? a : b;
     const bottomRect = a.bottom <= b.top ? b : a;
-    const gap = bottomRect.top - topRect.bottom;
-    if (gap <= 0) return;
     const x = (Math.max(a.left, b.left) + Math.min(a.right, b.right)) / 2;
-    const line = createSvg('line', {
+    svg.appendChild(createSvg('line', {
       x1: x, y1: topRect.bottom, x2: x, y2: bottomRect.top,
       stroke: STROKE_GAP, 'stroke-width': 1.5, 'stroke-dasharray': '4 3'
-    });
-    svg.appendChild(line);
+    }));
     svg.appendChild(createSvg('line', {
       x1: x - 5, y1: topRect.bottom, x2: x + 5, y2: topRect.bottom,
       stroke: STROKE_GAP, 'stroke-width': 1.5
@@ -195,9 +180,8 @@ function drawGap(svg: SVGElement, a: RectBounds, b: RectBounds): void {
       stroke: STROKE_GAP, 'stroke-width': 1.5
     }));
     const mid = (topRect.bottom + bottomRect.top) / 2;
-    addLabel(svg, `${Math.round(gap)}px`, x + 4, mid + 4, FILL_GAP, 'start');
+    addLabel(svg, `${gap.px}px`, x + 4, mid + 4, FILL_GAP, 'start');
   }
-  // If neither overlaps, elements are diagonally positioned — skip (too noisy to show).
 }
 
 /**
@@ -205,9 +189,9 @@ function drawGap(svg: SVGElement, a: RectBounds, b: RectBounds): void {
  * Draws:
  *   - Red dashed outline on the parent of the MOST RECENT selection
  *   - Blue solid outline + numbered badge + size label on every selection
- *   - Orange dashed distance lines between every consecutive pair that share an axis
+ *   - Orange dashed distance lines driven by gap metadata from the core schema
  */
-export function renderOverlay(targets: readonly Element[]): void {
+export function renderOverlay(targets: readonly Element[], gaps: readonly Gap[] = []): void {
   clearOverlay();
   if (targets.length === 0) return;
 
@@ -236,11 +220,9 @@ export function renderOverlay(targets: readonly Element[]): void {
     );
   }
 
-  // Each selected element.
-  const bounds: RectBounds[] = [];
+  // Each selected element — draw outline, size label, and numbered badge.
   targets.forEach((el, i) => {
     const r = el.getBoundingClientRect();
-    bounds.push(toBounds(r));
     svg.appendChild(createSvg('rect', {
       x: r.left, y: r.top, width: r.width, height: r.height,
       fill: 'none', stroke: STROKE_SELECTED, 'stroke-width': 2
@@ -256,9 +238,16 @@ export function renderOverlay(targets: readonly Element[]): void {
     addBadge(svg, i + 1, r.left - 10, r.top - 10, FILL_SELECTED);
   });
 
-  // Distances between consecutive pairs.
-  for (let i = 1; i < bounds.length; i++) {
-    drawGap(svg, bounds[i - 1]!, bounds[i]!);
+  // Distance lines — read axis + px from core schema, map 1-based indices to viewport bounds.
+  const boundsByIndex = new Map<number, RectBounds>();
+  targets.forEach((el, i) => {
+    boundsByIndex.set(i + 1, toBounds(el.getBoundingClientRect()));
+  });
+  for (const gap of gaps) {
+    const fromBounds = boundsByIndex.get(gap.from);
+    const toBounds_ = boundsByIndex.get(gap.to);
+    if (!fromBounds || !toBounds_) continue;
+    drawGapFromSchema(svg, fromBounds, toBounds_, gap);
   }
 }
 
