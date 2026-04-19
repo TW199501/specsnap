@@ -271,13 +271,57 @@ export interface BoxModelInput {
   margin: readonly [number, number, number, number];
 }
 
+export interface FrameForDiagram {
+  index: number;
+  name: string;
+  boxModel: BoxModelInput;
+}
+
 /**
- * Render a box model diagram into the given container. Clears the container first.
+ * Render N box model diagrams into the given container, one per captured frame.
+ * Each card has the element's identity name + numbered badge as a header,
+ * matching the badge number on the on-page overlay.
+ */
+export function renderBoxModels(container: HTMLElement, frames: readonly FrameForDiagram[]): void {
+  removeAllChildren(container);
+  for (const frame of frames) {
+    const card = document.createElement('div');
+    card.className = 'box-model-card';
+
+    const header = document.createElement('div');
+    header.className = 'box-model-header';
+
+    const badge = document.createElement('span');
+    badge.className = 'box-model-badge';
+    badge.textContent = String(frame.index);
+
+    const name = document.createElement('span');
+    name.className = 'box-model-name';
+    name.textContent = frame.name;
+
+    header.appendChild(badge);
+    header.appendChild(name);
+    card.appendChild(header);
+
+    const svgHolder = document.createElement('div');
+    drawBoxModelSvg(svgHolder, frame.boxModel);
+    card.appendChild(svgHolder);
+
+    container.appendChild(card);
+  }
+}
+
+/**
+ * Render a single box model diagram into the given container. Clears the container first.
  * Diagram is a fixed 360×220 SVG — sizes inside it are schematic (not to scale)
  * so a 0-margin element is still readable alongside a 40px-content element.
  */
 export function renderBoxModel(container: HTMLElement, box: BoxModelInput): void {
   removeAllChildren(container);
+  drawBoxModelSvg(container, box);
+}
+
+function drawBoxModelSvg(container: HTMLElement, box: BoxModelInput): void {
   const W = 360;
   const H = 220;
   const svg = createSvg('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }) as SVGSVGElement;

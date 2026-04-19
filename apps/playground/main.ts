@@ -1,6 +1,6 @@
 import { captureSession, toJSON, toMarkdown } from '@tw199501/specsnap-core';
 
-import { clearOverlay, renderBoxModel, renderOverlay } from './visualizer.js';
+import { clearOverlay, renderBoxModels, renderOverlay } from './visualizer.js';
 
 const startBtn = document.getElementById('start') as HTMLButtonElement | null;
 const clearBtn = document.getElementById('clear') as HTMLButtonElement | null;
@@ -54,9 +54,15 @@ function renderOutputs(): void {
   mdEl!.textContent = mdParts.join('\n\n━━━━━━━━━━━━━━━━━━━━━━━\n\n');
   jsonEl!.textContent = toJSON(session);
 
-  // Box model for the most recently selected element.
-  const last = session.frames[session.frames.length - 1]!;
-  renderBoxModel(boxModelEl as HTMLElement, last.boxModel);
+  // One box model card per selected element, labeled with its identity name.
+  renderBoxModels(
+    boxModelEl as HTMLElement,
+    session.frames.map((f) => ({
+      index: f.index,
+      name: f.identity.name,
+      boxModel: f.boxModel
+    }))
+  );
 
   renderOverlay(selections);
 }

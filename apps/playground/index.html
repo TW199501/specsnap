@@ -82,29 +82,60 @@
     }
     #start:hover { background: #f4f4f7; }
     #start.active { background: #ff5000; color: #fff; border-color: #ff5000; }
-    .box-model-row {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 24px;
-      align-items: start;
+    .box-model-section {
       margin-bottom: 24px;
     }
     #box-model {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 16px;
     }
     #box-model:empty::before {
-      content: 'Box model will render here after you capture an element.';
+      content: 'Box models will render here — one card per captured element.';
+      grid-column: 1 / -1;
       display: block;
-      width: 360px;
-      height: 220px;
-      padding: 90px 20px;
-      box-sizing: border-box;
+      padding: 48px 20px;
       text-align: center;
       color: #888;
       font-size: 13px;
+      background: #fafafa;
+      border: 1px dashed #ddd;
+      border-radius: 8px;
+    }
+    .box-model-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .box-model-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .box-model-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .box-model-name {
+      font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+      font-size: 13px;
+      color: #0f0f1a;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .output-row {
       display: grid;
@@ -142,18 +173,16 @@
     </div>
   </div>
 
-  <div class="box-model-row">
-    <div>
-      <h2 style="font-size:14px;text-transform:uppercase;color:#666;margin:0 0 8px">Box Model</h2>
-      <div id="box-model"></div>
-    </div>
+  <div class="box-model-section">
+    <h2 style="font-size:14px;text-transform:uppercase;color:#666;margin:0 0 12px">Box Models · one per captured element</h2>
+    <div id="box-model"></div>
+  </div>
+
+  <div class="output-row">
     <div class="output-col">
       <h2>Output (Markdown)</h2>
       <pre id="md"></pre>
     </div>
-  </div>
-
-  <div class="output-row">
     <div class="output-col">
       <h2>Output (JSON)</h2>
       <pre id="json"></pre>
