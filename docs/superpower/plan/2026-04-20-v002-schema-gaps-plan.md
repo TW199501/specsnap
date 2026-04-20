@@ -40,7 +40,7 @@ apps/playground/
 Alerts inventory:
 
 | Package | Severity | Issue |
-|---|---|---|
+| --- | --- | --- |
 | happy-dom | Critical × 2 | VM Context Escape → RCE in certain usage |
 | happy-dom | High × 2 | ECMAScriptModuleCompiler interpolates unsanitized export names as executable code |
 | happy-dom | High × 2 | `fetch` credentials use page-origin cookies instead of target-origin |
@@ -52,24 +52,26 @@ Fix strategy: upgrade `happy-dom`, `vite`, and let `tsup`'s transitive `esbuild`
 ### Task 0.1: Bump happy-dom
 
 **Files:**
-- Modify: `packages/core/package.json`
-- Modify: `pnpm-lock.yaml`
 
-- [ ] **Step 1: Check latest patched version**
+Modify: `packages/core/package.json`
 
-```bash
+Modify: `pnpm-lock.yaml`
+
+ **Step 1: Check latest patched version**
+
+```
 npm view happy-dom version
 ```
 
 Note the latest version (at time of writing plan, 15.x had the issues; 16.x or later should carry the patches — verify against the advisories).
 
-- [ ] **Step 2: Update `packages/core/package.json`**
+*   **Step 2: Update** `**packages/core/package.json**`
 
 Change `"happy-dom": "^15.11.0"` to `"happy-dom": "^<latest>"` (whatever `npm view` reported).
 
-- [ ] **Step 3: Run `pnpm install` then full test suite**
+*   **Step 3: Run** `**pnpm install**` **then full test suite**
 
-```bash
+```
 pnpm install
 pnpm --filter @tw199501/specsnap-core test
 pnpm --filter @tw199501/specsnap-core check
@@ -77,9 +79,9 @@ pnpm --filter @tw199501/specsnap-core check
 
 All existing 36 tests MUST still pass. If any break due to happy-dom API changes, note them as BLOCKED and escalate to the controller — we don't proceed until tests are green.
 
-- [ ] **Step 4: Commit**
+*   **Step 4: Commit**
 
-```bash
+```
 git add packages/core/package.json pnpm-lock.yaml
 git commit -m "chore(deps): bump happy-dom to address Dependabot alerts"
 ```
@@ -87,51 +89,54 @@ git commit -m "chore(deps): bump happy-dom to address Dependabot alerts"
 ### Task 0.2: Bump vite
 
 **Files:**
-- Modify: `apps/playground/package.json`
-- Modify: `pnpm-lock.yaml`
 
-- [ ] **Step 1: Check latest**
+Modify: `apps/playground/package.json`
 
-```bash
+Modify: `pnpm-lock.yaml`
+
+ **Step 1: Check latest**
+
+```
 npm view vite version
 ```
 
-- [ ] **Step 2: Update `apps/playground/package.json`**
+*   **Step 2: Update** `**apps/playground/package.json**`
 
 Change `"vite": "^6.0.0"` to the latest patched major.
 
-- [ ] **Step 3: Install + smoke-start the playground**
+*   **Step 3: Install + smoke-start the playground**
 
-```bash
+```
 pnpm install
 pnpm --filter specsnap-playground dev
 ```
 
 Confirm Vite starts without errors and serves `http://localhost:5173`. A quick browser click-test on "Start inspect mode" → select element → see output should still work.
 
-- [ ] **Step 4: Commit**
+*   **Step 4: Commit**
 
-```bash
+```
 git add apps/playground/package.json pnpm-lock.yaml
 git commit -m "chore(deps): bump vite to address Dependabot alerts"
 ```
 
 ### Task 0.3: Verify Dependabot alerts close + push
 
-- [ ] **Step 1: Push**
+*   **Step 1: Push**
 
-```bash
+```
 git push origin main
 ```
 
-- [ ] **Step 2: Wait a few minutes then check GitHub**
+*   **Step 2: Wait a few minutes then check GitHub**
 
 GitHub's Dependabot rescans within ~15 min of a new push. Revisit https://github.com/TW199501/specsnap/security/dependabot and confirm alert count drops to 0 (or near-0 if some alerts target packages we're not using).
 
-- [ ] **Step 3: If any alerts remain:**
+ **Step 3: If any alerts remain:**
 
-- If the remaining alert is for a transitive dep that the fixed version doesn't reach (e.g. esbuild pinned via tsup), we may need to wait for upstream. Add a note in the GitHub alert explaining (`dismiss` with reason `tolerable_risk` is acceptable for transitive dev deps).
-- If a direct dep alert persists, bump that dep's version directly. Repeat Task 0.1 / 0.2 pattern.
+If the remaining alert is for a transitive dep that the fixed version doesn't reach (e.g. esbuild pinned via tsup), we may need to wait for upstream. Add a note in the GitHub alert explaining (`dismiss` with reason `tolerable_risk` is acceptable for transitive dev deps).
+
+If a direct dep alert persists, bump that dep's version directly. Repeat Task 0.1 / 0.2 pattern.
 
 **Exit criterion for Phase 0:** Dependabot shows 0 open critical/high alerts, all tests pass, `pnpm build` + `pnpm check` green.
 
@@ -142,20 +147,21 @@ GitHub's Dependabot rescans within ~15 min of a new push. Revisit https://github
 ### Task 1: Add `Gap` interface + extend `Session` + bump version
 
 **Files:**
-- Modify: `packages/core/src/types.ts`
 
-- [ ] **Step 1: Update `SCHEMA_VERSION` and add `Gap` + `Axis` types**
+Modify: `packages/core/src/types.ts`
+
+ **Step 1: Update** `**SCHEMA_VERSION**` **and add** `**Gap**` **+** `**Axis**` **types**
 
 Edit `packages/core/src/types.ts`:
 
-```ts
+```
 // Change the schema version from '0.0.1' to '0.0.2'
 export const SCHEMA_VERSION = '0.0.2';
 ```
 
 After the existing `Frame` interface, add:
 
-```ts
+```
 export type GapAxis = 'horizontal' | 'vertical';
 
 /**
@@ -177,7 +183,7 @@ export interface Gap {
 
 Modify the `Session` interface to add the `gaps` field at the end:
 
-```ts
+```
 export interface Session {
   schemaVersion: typeof SCHEMA_VERSION;
   id: string;
@@ -192,27 +198,27 @@ export interface Session {
 }
 ```
 
-- [ ] **Step 2: Bump the core `package.json` version**
+*   **Step 2: Bump the core** `**package.json**` **version**
 
 Edit `packages/core/package.json`:
 
-```json
+```
 {
   "version": "0.0.2"
 }
 ```
 
-- [ ] **Step 3: Type-check to confirm no downstream breaks**
+*   **Step 3: Type-check to confirm no downstream breaks**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core check
 ```
 
 Expected: many errors about `Session` now requiring `gaps`. This is correct — these will be fixed in Task 3 when `captureSession` is updated.
 
-- [ ] **Step 4: Commit**
+*   **Step 4: Commit**
 
-```bash
+```
 git add packages/core/src/types.ts packages/core/package.json
 git commit -m "feat(core)!: add Gap type and Session.gaps field · bump to 0.0.2"
 ```
@@ -226,13 +232,16 @@ Note: the `!` after `feat(core)` marks this as a breaking-ish change (schema ext
 ### Task 2: Implement and test `computeGap`
 
 **Files:**
-- Create: `packages/core/src/gap.ts`
-- Create: `packages/core/src/gap.test.ts`
-- Modify: `packages/core/src/index.ts`
 
-- [ ] **Step 1: Write failing test `src/gap.test.ts`**
+Create: `packages/core/src/gap.ts`
 
-```ts
+Create: `packages/core/src/gap.test.ts`
+
+Modify: `packages/core/src/index.ts`
+
+ **Step 1: Write failing test** `**src/gap.test.ts**`
+
+```
 import { describe, expect, it } from 'vitest';
 
 import { computeGap } from './gap.js';
@@ -292,17 +301,17 @@ describe('computeGap', () => {
 });
 ```
 
-- [ ] **Step 2: Run test — expect FAIL**
+*   **Step 2: Run test — expect FAIL**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test gap
 ```
 
 Expected: fails to resolve `./gap.js`.
 
-- [ ] **Step 3: Implement `src/gap.ts`**
+*   **Step 3: Implement** `**src/gap.ts**`
 
-```ts
+```
 import type { Gap, Rect } from './types.js';
 
 /**
@@ -354,26 +363,26 @@ function round(n: number): number {
 }
 ```
 
-- [ ] **Step 4: Run tests — expect PASS**
+*   **Step 4: Run tests — expect PASS**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test gap
 ```
 
 Expected: 7 tests PASS.
 
-- [ ] **Step 5: Re-export from `src/index.ts`**
+*   **Step 5: Re-export from** `**src/index.ts**`
 
 Append to `packages/core/src/index.ts`:
 
-```ts
+```
 export { computeGap } from './gap.js';
 export type { Gap, GapAxis } from './types.js';
 ```
 
-- [ ] **Step 6: Commit**
+*   **Step 6: Commit**
 
-```bash
+```
 git add packages/core/
 git commit -m "feat(core): add computeGap utility for axis-aligned distances"
 ```
@@ -385,14 +394,16 @@ git commit -m "feat(core): add computeGap utility for axis-aligned distances"
 ### Task 3: `captureSession` populates `session.gaps`
 
 **Files:**
-- Modify: `packages/core/src/capture.ts`
-- Modify: `packages/core/src/capture.test.ts`
 
-- [ ] **Step 1: Update tests first — add gaps expectations to existing multi-frame tests**
+Modify: `packages/core/src/capture.ts`
+
+Modify: `packages/core/src/capture.test.ts`
+
+ **Step 1: Update tests first — add gaps expectations to existing multi-frame tests**
 
 In `packages/core/src/capture.test.ts`, inside the `describe('captureSession', ...)` block, add these tests:
 
-```ts
+```
   it('populates gaps between consecutive frames when they share an axis', () => {
     clearBody();
     // Two inline-block divs side-by-side with 12px margin between.
@@ -440,17 +451,17 @@ In `packages/core/src/capture.test.ts`, inside the `describe('captureSession', .
   });
 ```
 
-- [ ] **Step 2: Run tests — expect FAIL** (captureSession doesn't populate gaps yet)
+*   **Step 2: Run tests — expect FAIL** (captureSession doesn't populate gaps yet)
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test capture
 ```
 
-- [ ] **Step 3: Update `captureSession` in `src/capture.ts`**
+*   **Step 3: Update** `**captureSession**` **in** `**src/capture.ts**`
 
 Edit `captureSession` to compute and attach gaps:
 
-```ts
+```
 import { computeGap } from './gap.js';
 // ... existing imports ...
 
@@ -482,17 +493,17 @@ export function captureSession(elements: readonly Element[]): Session {
 }
 ```
 
-- [ ] **Step 4: Run tests — expect PASS**
+*   **Step 4: Run tests — expect PASS**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test
 ```
 
 Expected: all tests (old + new) PASS. Total should be ~43 (36 old + 7 gap + 4 new capture tests = 47; exact count depends on pre-existing counts — just confirm all green).
 
-- [ ] **Step 5: Commit**
+*   **Step 5: Commit**
 
-```bash
+```
 git add packages/core/src/capture.ts packages/core/src/capture.test.ts
 git commit -m "feat(core): captureSession auto-computes gaps between consecutive frames"
 ```
@@ -504,14 +515,16 @@ git commit -m "feat(core): captureSession auto-computes gaps between consecutive
 ### Task 4: Markdown serializer renders gaps section
 
 **Files:**
-- Modify: `packages/core/src/serialize-md.ts`
-- Modify: `packages/core/src/serialize-md.test.ts`
 
-- [ ] **Step 1: Add failing test**
+Modify: `packages/core/src/serialize-md.ts`
+
+Modify: `packages/core/src/serialize-md.test.ts`
+
+ **Step 1: Add failing test**
 
 In `serialize-md.test.ts`, add:
 
-```ts
+```
   it('renders a gaps section when session has gaps', () => {
     clearBody();
     const a = mount(makeElement({
@@ -538,11 +551,11 @@ In `serialize-md.test.ts`, add:
   });
 ```
 
-- [ ] **Step 2: Update `serialize-md.ts`**
+*   **Step 2: Update** `**serialize-md.ts**`
 
 In the `renderFrame` function, after the "背景 (Background)" section and before the final `''` entry of the array, add gaps rendering — but **only for the first frame** (index 1), so that gaps appear once per session (at the start), not repeated N times:
 
-```ts
+```
 // existing: all the background lines...
 '- **border-radius**: ...',
 '',
@@ -558,15 +571,15 @@ In the `renderFrame` function, after the "背景 (Background)" section and befor
   : [])
 ```
 
-- [ ] **Step 3: Run tests — expect PASS**
+*   **Step 3: Run tests — expect PASS**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core test serialize-md
 ```
 
-- [ ] **Step 4: Commit**
+*   **Step 4: Commit**
 
-```bash
+```
 git add packages/core/src/serialize-md.ts packages/core/src/serialize-md.test.ts
 git commit -m "feat(core): render 間距 (Gaps) section in Markdown output"
 ```
@@ -578,16 +591,18 @@ git commit -m "feat(core): render 間距 (Gaps) section in Markdown output"
 ### Task 5: Visualizer consumes `session.gaps` instead of local compute
 
 **Files:**
-- Modify: `apps/playground/visualizer.ts`
-- Modify: `apps/playground/main.ts`
 
-- [ ] **Step 1: Update `visualizer.ts` `renderOverlay` signature**
+Modify: `apps/playground/visualizer.ts`
+
+Modify: `apps/playground/main.ts`
+
+ **Step 1: Update** `**visualizer.ts**` `**renderOverlay**` **signature**
 
 The current `renderOverlay(targets)` calls `drawGap(svg, a, b)` internally using recomputed coordinates. Refactor so `drawGap` takes the gap axis + px from the schema, and the caller passes the pre-computed gaps.
 
 Replace the `renderOverlay` function signature:
 
-```ts
+```
 import type { Gap } from '@tw199501/specsnap-core';
 
 export function renderOverlay(targets: readonly Element[], gaps: readonly Gap[] = []): void {
@@ -661,11 +676,11 @@ function drawGapFromSchema(
 
 Delete the old `drawGap` function that recomputed gaps locally.
 
-- [ ] **Step 2: Update `main.ts` to pass gaps**
+*   **Step 2: Update** `**main.ts**` **to pass gaps**
 
 In `main.ts`, the `renderOutputs` function (around where `renderOverlay(selections)` is called):
 
-```ts
+```
 // Old:
 renderOverlay(selections);
 
@@ -673,17 +688,17 @@ renderOverlay(selections);
 renderOverlay(selections, session.gaps);
 ```
 
-- [ ] **Step 3: Test in browser**
+*   **Step 3: Test in browser**
 
-```bash
+```
 pnpm --filter specsnap-playground dev
 ```
 
 Click 3 elements. Orange gap lines should still appear with the same px values as before — but now sourced from `session.gaps`. Pasting Markdown into Claude should show a "## 間距 (Gaps)" section too.
 
-- [ ] **Step 4: Commit**
+*   **Step 4: Commit**
 
-```bash
+```
 git add apps/playground/
 git commit -m "refactor(playground): consume session.gaps from core schema"
 ```
@@ -695,26 +710,29 @@ git commit -m "refactor(playground): consume session.gaps from core schema"
 ### Task 6: Update README mentions + publish
 
 **Files:**
-- Modify: `packages/core/README.md`
-- Modify: root `README.md`
 
-- [ ] **Step 1: Update `packages/core/README.md`**
+Modify: `packages/core/README.md`
+
+Modify: root `README.md`
+
+ **Step 1: Update** `**packages/core/README.md**`
 
 In the "Status" section, change the v0.0.2 bullet:
-- Before: `v0.0.2 — inter-element gap distances in the session schema`
-- After: `v0.0.2 (current) — inter-element gap distances in the session schema. See the "間距 (Gaps)" section in Markdown output.`
+
+*   Before: `v0.0.2 — inter-element gap distances in the session schema`
+*   After: `v0.0.2 (current) — inter-element gap distances in the session schema. See the "間距 (Gaps)" section in Markdown output.`
 
 Add a new "Gaps" section under "What you get per frame":
 
-```markdown
+```
 ## What you get per session (beyond frames)
 
 - **Gaps** — every consecutive pair of frames that shares an axis produces a `Gap { from, to, axis, px }` entry. AI sees spacing info as structured data, not visual-only.
 ```
 
-- [ ] **Step 2: Full check suite**
+*   **Step 2: Full check suite**
 
-```bash
+```
 pnpm --filter @tw199501/specsnap-core check
 pnpm --filter @tw199501/specsnap-core test
 pnpm --filter @tw199501/specsnap-core build
@@ -723,35 +741,35 @@ node scripts/check-line-endings.mjs
 
 All must pass.
 
-- [ ] **Step 3: Commit README**
+*   **Step 3: Commit README**
 
-```bash
+```
 git add packages/core/README.md
 git commit -m "docs(core): document gaps field in 0.0.2 README"
 ```
 
-- [ ] **Step 4: Dry-run publish**
+*   **Step 4: Dry-run publish**
 
-```bash
+```
 cd packages/core
 npm publish --dry-run --access public
 ```
 
 Confirm version shows `0.0.2` and file list is clean.
 
-- [ ] **Step 5: STOP HERE — user runs actual publish**
+*   **Step 5: STOP HERE — user runs actual publish**
 
 The user will provide their 2FA OTP and run:
 
-```bash
+```
 npm publish --access public --otp=XXXXXX
 ```
 
 Do not attempt this yourself.
 
-- [ ] **Step 6: After user publishes, tag + push**
+*   **Step 6: After user publishes, tag + push**
 
-```bash
+```
 cd ../..
 git tag -a core@0.0.2 -m "specsnap-core 0.0.2 — gaps in session schema"
 git push origin main
@@ -762,17 +780,17 @@ git push origin core@0.0.2
 
 ## Summary: what ships in `0.0.2`
 
-- `Session.gaps: Gap[]` — new field carrying inter-element distances
-- `computeGap(fromIndex, toIndex, a, b)` — exported pure utility
-- Markdown `## 間距 (Gaps)` section on the first frame's doc
-- Playground visualizer reads from schema rather than local compute
-- 7+ new tests, total ~47 passing
+*   `Session.gaps: Gap[]` — new field carrying inter-element distances
+*   `computeGap(fromIndex, toIndex, a, b)` — exported pure utility
+*   Markdown `## 間距 (Gaps)` section on the first frame's doc
+*   Playground visualizer reads from schema rather than local compute
+*   7+ new tests, total ~47 passing
 
 ## What's next (0.0.3 candidates, pick one)
 
-1. **Recursive children dump** — P5 of vision. Each frame optionally includes filtered descendant frames (semantic filter: visible text / interactive role / non-inherited style).
-2. **`data-source` attribute detection** — if a Vite/webpack plugin has injected `data-source="File.vue:42"`, capture it into `identity.source`.
-3. **Pseudo-state detection** — :hover, :focus-visible, :disabled styles that would apply, captured into `Frame.pseudoStates`.
-4. **Screenshot export** — integrate `dom-to-image-more` behind a new `toAnnotatedPNG()` API.
+1.  **Recursive children dump** — P5 of vision. Each frame optionally includes filtered descendant frames (semantic filter: visible text / interactive role / non-inherited style).
+2.  `**data-source**` **attribute detection** — if a Vite/webpack plugin has injected `data-source="File.vue:42"`, capture it into `identity.source`.
+3.  **Pseudo-state detection** — :hover, :focus-visible, :disabled styles that would apply, captured into `Frame.pseudoStates`.
+4.  **Screenshot export** — integrate `dom-to-image-more` behind a new `toAnnotatedPNG()` API.
 
 Pick based on which unblocks the most pain. My (AI) suggestion: **#3 pseudo-states** — it's where "my styles aren't what I expect" conversations happen most. But #1 recursive dump is the biggest wow-factor demo.

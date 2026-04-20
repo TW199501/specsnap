@@ -4,5 +4,6 @@
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "editor.tabSize": 2,
-  "editor.insertSpaces": true
+  "editor.insertSpaces": true,
+  "editor.fontFamily": "'MapleMono-NF-CN',Consolas, 'Courier New', monospace"
 }
