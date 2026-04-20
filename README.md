@@ -75,6 +75,94 @@ Pre-alpha (v0.0.x) — schema may change. Locking in at v1.0.
 - pnpm **9.15+**
 - TypeScript **6+** (for contributing)
 
+## Development
+
+Clone, install once, then use the following commands from the repo root.
+
+### Daily dev loop
+
+```bash
+# Install workspace dependencies (first time, or after lockfile changes)
+pnpm install
+
+# Start the playground dev server — port is pinned to 5999 via vite.config.ts,
+# and a predev hook kills any zombie process holding the port first
+pnpm -F specsnap-playground dev
+# → http://localhost:5999/
+```
+
+### Tests
+
+```bash
+# Run every workspace's test suite (core + playground)
+pnpm test
+
+# Just the core library (82 tests)
+pnpm -F @tw199501/specsnap-core test
+
+# Just the playground (fs-access adapter logic)
+pnpm -F specsnap-playground test
+
+# Watch mode (core)
+pnpm -F @tw199501/specsnap-core test:watch
+
+# Coverage report (core) — outputs to packages/core/coverage/
+pnpm -F @tw199501/specsnap-core test:coverage
+```
+
+### Check (LF + types)
+
+```bash
+# Mirrors the release gate: LF enforcement across all tracked files,
+# then tsc --noEmit in every workspace
+pnpm check
+```
+
+### Build
+
+```bash
+# Builds packages/core's dist (tsup — ESM + CJS + d.ts)
+pnpm -F @tw199501/specsnap-core build
+
+# Preview what the npm tarball will contain (no upload)
+cd packages/core
+npm pack --dry-run
+cd ../..
+```
+
+### Release ritual
+
+```bash
+# 1) Bump the version in packages/core/package.json
+# 2) Update READMEs + any version-sensitive tests
+# 3) Full gate — all green before tagging
+pnpm check && pnpm test && pnpm build
+
+# 4) Commit + tag
+git add -A
+git commit -m "release: @tw199501/specsnap-core@X.Y.Z"
+git tag -a core@X.Y.Z -m "core X.Y.Z — one-line summary"
+
+# 5) Push main + tag
+git push origin main
+git push origin core@X.Y.Z
+
+# 6) Publish to npm (interactive — prompts for 2FA if not cached)
+cd packages/core
+npm publish
+```
+
+Once `NPM_TOKEN` is configured as a repo secret, steps 6 happens
+automatically from [publish.yml](./.github/workflows/publish.yml) when
+the tag is pushed.
+
+### One-liner: ci gate
+
+```bash
+# Everything the GitHub Actions CI runs, locally
+pnpm check && pnpm test && pnpm build
+```
+
 ## License
 
 [MIT](./LICENSE) © tw199501

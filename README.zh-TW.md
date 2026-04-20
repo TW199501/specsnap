@@ -75,6 +75,92 @@ Pre-alpha（v0.0.x）— schema 可能微調，v1.0 時凍結。
 - pnpm **9.15+**
 - TypeScript **6+**（貢獻者需要）
 
+## 開發指令
+
+clone repo、裝過一次依賴後，以下指令都從 repo 根目錄跑。
+
+### 日常開發
+
+```bash
+# 裝 workspace 依賴（第一次 + lockfile 變動時）
+pnpm install
+
+# 起 playground dev server — port 鎖死在 5999（vite.config.ts 強制）
+# predev 會先 kill 佔用 5999 的殭屍進程
+pnpm -F specsnap-playground dev
+# → http://localhost:5999/
+```
+
+### 測試
+
+```bash
+# 跑所有 workspace 的測試（core + playground）
+pnpm test
+
+# 只跑 core（82 tests）
+pnpm -F @tw199501/specsnap-core test
+
+# 只跑 playground（fs-access adapter 邏輯）
+pnpm -F specsnap-playground test
+
+# 監看模式（core）
+pnpm -F @tw199501/specsnap-core test:watch
+
+# 測試覆蓋率報告 → packages/core/coverage/
+pnpm -F @tw199501/specsnap-core test:coverage
+```
+
+### 檢查（LF + 型別）
+
+```bash
+# 跟發版 gate 一致：先查 LF、再每個 workspace 跑 tsc --noEmit
+pnpm check
+```
+
+### 打包
+
+```bash
+# 建 packages/core 的 dist（tsup 產生 ESM + CJS + d.ts）
+pnpm -F @tw199501/specsnap-core build
+
+# 預覽 npm tarball 會包什麼（不上傳）
+cd packages/core
+npm pack --dry-run
+cd ../..
+```
+
+### 發版流程
+
+```bash
+# 1) 改 packages/core/package.json 的 version
+# 2) 更新 READMEs + 版本相關的測試
+# 3) full gate 全綠才能打 tag
+pnpm check && pnpm test && pnpm build
+
+# 4) commit + tag
+git add -A
+git commit -m "release: @tw199501/specsnap-core@X.Y.Z"
+git tag -a core@X.Y.Z -m "core X.Y.Z — one-line summary"
+
+# 5) push main + tag
+git push origin main
+git push origin core@X.Y.Z
+
+# 6) 發佈到 npm（互動式，若沒有 cache 的 token 會要 2FA）
+cd packages/core
+npm publish
+```
+
+設定 `NPM_TOKEN` repo secret 後，步驟 6 會由
+[publish.yml](./.github/workflows/publish.yml) 在 tag push 時自動完成。
+
+### 一鍵 CI gate
+
+```bash
+# GitHub Actions 跑的那套全裝在這
+pnpm check && pnpm test && pnpm build
+```
+
 ## 授權
 
 [MIT](./LICENSE) © tw199501
