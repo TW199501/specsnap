@@ -109,6 +109,12 @@ export interface SerializeOptions {
   lexiconOverride?: Readonly<Record<string, string>>;
   /** If true, JSON output is pretty-printed. Default: true. */
   pretty?: boolean;
+  /**
+   * Optional image filenames — if `imageFilenames[i]` exists, frame i's MD
+   * gets a `![Frame N](./<filename>)` relative-path reference injected right
+   * after the YAML frontmatter. Length should match `session.frames.length`.
+   */
+  imageFilenames?: readonly string[];
 }
 
 export interface AnnotatedPngOptions {

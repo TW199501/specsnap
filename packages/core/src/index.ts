@@ -39,4 +39,5 @@ export {
 
 export { toAnnotatedPNG } from './to-annotated-png.js';
 
-export { toAnnotatedMarkdown } from './to-annotated-markdown.js';
+export { toSpecSnapBundle, formatCaptureId, formatDateYYYYMMDD } from './to-specsnap-bundle.js';
+export type { SpecSnapBundle, SpecSnapBundleOptions, SpecSnapBundleImage } from './to-specsnap-bundle.js';

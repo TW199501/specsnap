@@ -3,18 +3,26 @@ import type { Frame, SerializeOptions, Session } from './types.js';
 
 /**
  * Convert a Session into one Markdown document per frame.
+ *
+ * If `options.imageFilenames[i]` is provided, frame i's MD gets an
+ * `![Frame N](./<filename>)` image reference after the frontmatter — enabling
+ * consumers to bundle MD next to relative-path PNGs on disk.
  */
 export function toMarkdown(
   session: Session,
   options: SerializeOptions = {}
 ): string[] {
-  return session.frames.map((frame) => renderFrame(session, frame, options));
+  return session.frames.map((frame, i) => {
+    const imageFilename = options.imageFilenames?.[i];
+    return renderFrame(session, frame, options, imageFilename);
+  });
 }
 
 function renderFrame(
   session: Session,
   frame: Frame,
-  options: SerializeOptions
+  options: SerializeOptions,
+  imageFilename?: string
 ): string {
   const a = (prop: string) => {
     const cn = annotate(prop, options.lexiconOverride);
@@ -37,6 +45,7 @@ function renderFrame(
     `session_id: ${session.id}`,
     '---',
     '',
+    ...(imageFilename ? [`![Frame ${frame.index}](./${imageFilename})`, ''] : []),
     `# Frame ${frame.index} · ${identity.name}`,
     '',
     '## 基本 (Basics)',

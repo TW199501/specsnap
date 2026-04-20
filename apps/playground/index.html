@@ -11,20 +11,6 @@
       margin: 0 auto;
     }
     h1 { margin-top: 0; }
-    .controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 24px;
-      padding: 16px;
-      background: #f4f4f7;
-      border-radius: 8px;
-    }
-    #hint {
-      font-size: 14px;
-      color: #555;
-      flex: 1;
-    }
     .targets {
       display: flex;
       gap: 16px;
@@ -35,12 +21,14 @@
       border: 2px dashed #ccc;
       border-radius: 8px;
     }
-    body.inspecting .targets {
-      cursor: crosshair;
+    body.specsnap-inspecting .targets {
       border-color: #ff5000;
       background: #fff5ef;
     }
-    body.inspecting .targets * { cursor: crosshair !important; }
+    body.specsnap-inspecting,
+    body.specsnap-inspecting *:not(#specsnap-panel, #specsnap-panel *) {
+      cursor: crosshair !important;
+    }
     button#save {
       width: 120px; height: 34px;
       padding: 4px 12px; margin: 8px;
@@ -71,20 +59,14 @@
       line-height: 1.5;
       width: 200px;
     }
-    #start {
-      padding: 8px 16px;
+    .section-h {
       font-size: 14px;
-      font-weight: 500;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      background: #fff;
-      cursor: pointer;
+      text-transform: uppercase;
+      color: #666;
+      margin: 0 0 12px;
     }
-    #start:hover { background: #f4f4f7; }
-    #start.active { background: #ff5000; color: #fff; border-color: #ff5000; }
-    .box-model-section {
-      margin-bottom: 24px;
-    }
+    /* ── Box model debug panel (playground-only) ───── */
+    .box-model-section { margin-bottom: 24px; }
     #box-model {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -120,13 +102,11 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 20px;
-      height: 20px;
+      width: 20px; height: 20px;
       border-radius: 50%;
       background: #2563eb;
       color: #fff;
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 11px; font-weight: 700;
       flex-shrink: 0;
     }
     .box-model-name {
@@ -137,32 +117,199 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .output-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+    /* ── Floating SpecSnap panel (mirrors antares2 TheSpecSnapInspector) ── */
+    #specsnap-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 99998;
     }
-    .output-col h2 { font-size: 14px; text-transform: uppercase; color: #666; margin: 0 0 8px; }
-    pre {
-      background: #f4f4f7;
-      padding: 16px;
-      border-radius: 6px;
-      max-height: 500px;
-      overflow: auto;
+    #specsnap-panel {
+      position: fixed;
+      width: 420px;
+      height: 540px;
+      display: flex;
+      flex-direction: column;
+      z-index: 99999;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: #ffffff;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
+      font-size: 13px;
+      font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+    }
+    .specsnap-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px 6px 12px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      background: #f8f9fa;
+      flex-shrink: 0;
+      cursor: move;
+      user-select: none;
+    }
+    .specsnap-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .specsnap-title-icon {
+      font-size: 14px;
+      color: #2563eb;
+    }
+    .specsnap-capture-id {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 11px;
+      color: #888;
+      margin-left: 6px;
+    }
+    .specsnap-close {
+      width: 22px; height: 22px;
+      padding: 0;
+      font-size: 16px; line-height: 1;
+      color: #666;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .specsnap-close:hover { background: rgba(0,0,0,0.06); color: #000; }
+    .specsnap-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+    }
+    .specsnap-controls .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      padding: 6px 10px;
       font-size: 12px;
-      line-height: 1.5;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    .specsnap-controls .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .specsnap-inspect-btn {
+      flex: 1;
+      min-width: 0;
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+      white-space: nowrap;
+    }
+    .specsnap-inspect-btn.active {
+      background: #dc2626;
+      border-color: #dc2626;
+    }
+    .specsnap-clear-btn {
+      background: transparent;
+      color: #666;
+      flex-shrink: 0;
+    }
+    .specsnap-clear-btn:hover:not(:disabled) { color: #000; }
+    .specsnap-copy-btn {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .specsnap-copy-btn.flash {
+      background: #10b981;
+      border-color: #10b981;
+    }
+    .specsnap-hint {
+      padding: 4px 12px;
+      font-size: 11px;
+      color: #888;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+      line-height: 1.4;
+      min-height: 26px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .specsnap-hint.inspecting { color: #ef4444; }
+    .specsnap-pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: specsnap-pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes specsnap-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    .specsnap-content {
+      flex: 1;
+      overflow: auto;
+      position: relative;
+    }
+    .specsnap-pre {
       margin: 0;
+      padding: 10px 12px;
+      font-size: 11px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: transparent;
+      border: none;
+      font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+    }
+    .specsnap-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      opacity: 0.4;
+      gap: 8px;
+      font-size: 13px;
+      padding: 20px;
+      text-align: center;
+    }
+    .specsnap-json-details {
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      flex-shrink: 0;
+      background: #fafafa;
+    }
+    .specsnap-json-details > summary {
+      padding: 6px 12px;
+      font-size: 11px;
+      color: #888;
+      cursor: pointer;
+    }
+    .specsnap-json-details pre {
+      margin: 0;
+      padding: 10px 12px;
+      background: #fff;
+      font-size: 10px;
+      max-height: 160px;
+      overflow: auto;
+      font-family: 'Fira Code', Consolas, monospace;
     }
   </style>
 </head>
 <body>
   <h1>SpecSnap Playground</h1>
-
-  <div class="controls">
-    <button id="start">Start inspect mode</button>
-    <button id="clear" style="padding:8px 14px;font-size:14px;border:1px solid #d1d5db;border-radius:6px;background:#fff;cursor:pointer">Clear</button>
-    <div id="hint">Click "Start inspect mode", then click multiple elements inside the dashed box. Gaps between them show as orange dashed lines. Press ESC or Done to finalize.</div>
-  </div>
+  <p style="color:#666;font-size:13px;margin-top:-8px">
+    Test harness for <code>@tw199501/specsnap-core</code>.
+    The floating panel on the right mirrors the real
+    <a href="https://github.com/TW199501/antares2" style="color:#2563eb">antares2</a>
+    <code>TheSpecSnapInspector.vue</code> integration.
+    <strong>Click Copy MD</strong> — MD goes to your clipboard and the PNGs download
+    as <code>YYYYMMDD-NN-1.png</code> (ready to drop into <code>specsnap/YYYYMMDD/</code>).
+  </p>
 
   <div class="targets">
     <button id="save">Save</button>
@@ -174,19 +321,46 @@
   </div>
 
   <div class="box-model-section">
-    <h2 style="font-size:14px;text-transform:uppercase;color:#666;margin:0 0 12px">Box Models · one per captured element</h2>
+    <h2 class="section-h">Box Models · playground debug aid</h2>
     <div id="box-model"></div>
   </div>
 
-  <div class="output-row">
-    <div class="output-col">
-      <h2>Output (Markdown)</h2>
-      <pre id="md"></pre>
+  <!-- Overlay: SVG outlines drawn on top of the whole page -->
+  <div id="specsnap-overlay"></div>
+
+  <!-- Floating panel — mimics antares2 TheSpecSnapInspector.vue -->
+  <div id="specsnap-panel">
+    <div class="specsnap-header" id="specsnap-drag-handle">
+      <div class="specsnap-title">
+        <span class="specsnap-title-icon">⎋</span>
+        <span>SpecSnap Inspector</span>
+        <span id="specsnap-capture-id" class="specsnap-capture-id"></span>
+      </div>
+      <button id="specsnap-close" class="specsnap-close" aria-label="Close">×</button>
     </div>
-    <div class="output-col">
-      <h2>Output (JSON)</h2>
-      <pre id="json"></pre>
+
+    <div class="specsnap-controls">
+      <button id="specsnap-inspect" class="btn specsnap-inspect-btn">Start Inspect</button>
+      <button id="specsnap-clear" class="btn specsnap-clear-btn" disabled>Clear</button>
+      <button id="specsnap-copy" class="btn specsnap-copy-btn" disabled>Copy MD</button>
     </div>
+
+    <div id="specsnap-hint" class="specsnap-hint">
+      Click Start Inspect, then click any element in the target area.
+    </div>
+
+    <div class="specsnap-content">
+      <pre id="specsnap-output" class="specsnap-pre" style="display:none"></pre>
+      <div id="specsnap-empty" class="specsnap-empty">
+        <div style="font-size:32px;opacity:0.5">⌖</div>
+        <p style="margin:0">No frames captured yet.</p>
+      </div>
+    </div>
+
+    <details class="specsnap-json-details">
+      <summary>Raw JSON (machine consumers)</summary>
+      <pre id="specsnap-json"></pre>
+    </details>
   </div>
 
   <script type="module" src="./main.ts"></script>
