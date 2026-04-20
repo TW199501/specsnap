@@ -110,3 +110,22 @@ export interface SerializeOptions {
   /** If true, JSON output is pretty-printed. Default: true. */
   pretty?: boolean;
 }
+
+export interface AnnotatedPngOptions {
+  /** Include numbered badges. Default: true. */
+  badges?: boolean;
+  /** Include gap distance markers. Default: true. */
+  gaps?: boolean;
+  /** Include size labels above each frame. Default: true. */
+  sizeLabels?: boolean;
+  /** Output format. Default: 'png'. */
+  format?: 'png' | 'jpeg';
+  /** JPEG quality 0..1 (ignored for PNG). Default: 0.92. */
+  quality?: number;
+  /** Device pixel ratio for the output. Default: session.viewport.devicePixelRatio. */
+  pixelRatio?: number;
+  /** Extra pixels of padding around the session bbox. Default: 16. */
+  padding?: number;
+  /** Background color for transparent regions. Default: '#ffffff'. */
+  background?: string;
+}
