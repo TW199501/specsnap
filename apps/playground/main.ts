@@ -8,6 +8,7 @@ import {
 } from '@tw199501/specsnap-core';
 import type { Gap, Session } from '@tw199501/specsnap-core';
 
+import { clearCachedRoot, writeBundle, type WriteResult } from './fs-access.js';
 import { clearOverlay, renderBoxModels, renderOverlay } from './visualizer.js';
 
 const panel = document.getElementById('specsnap-panel') as HTMLDivElement | null;
@@ -23,11 +24,15 @@ const boxmodelsEl = document.getElementById('specsnap-boxmodels') as HTMLDivElem
 const jsonEl = document.getElementById('specsnap-json') as HTMLPreElement | null;
 const captureIdEl = document.getElementById('specsnap-capture-id') as HTMLSpanElement | null;
 const targetsEl = document.querySelector('.targets') as HTMLDivElement | null;
+const fsRowEl = document.getElementById('specsnap-fs-row') as HTMLDivElement | null;
+const fsStatusEl = document.getElementById('specsnap-fs-status') as HTMLSpanElement | null;
+const changeFolderBtn = document.getElementById('specsnap-change-folder') as HTMLButtonElement | null;
 
 if (
   !panel || !header || !closeBtn || !inspectBtn || !clearBtn || !copyBtn
   || !hintEl || !outputEl || !emptyEl || !boxmodelsEl
   || !jsonEl || !captureIdEl || !targetsEl
+  || !fsRowEl || !fsStatusEl || !changeFolderBtn
 ) {
   throw new Error('playground: required elements missing');
 }
@@ -237,8 +242,13 @@ copyBtn.addEventListener('click', async () => {
 
     await navigator.clipboard.writeText(bundle.markdownContent);
 
-    triggerDownload(bundle.markdownFilename, new Blob([bundle.markdownContent], { type: 'text/markdown' }));
-    for (const img of bundle.images) triggerDownload(img.filename, img.blob);
+    const writeResult: WriteResult = await writeBundle({
+      dirName: bundle.dirName,
+      markdownFilename: bundle.markdownFilename,
+      markdownContent: bundle.markdownContent,
+      images: bundle.images
+    });
+    showFsStatus(writeResult);
 
     commitDailySequence(sequence);
     refreshCaptureIdPreview();
@@ -259,16 +269,17 @@ copyBtn.addEventListener('click', async () => {
   }
 });
 
-function triggerDownload(filename: string, blob: Blob): void {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+function showFsStatus(result: WriteResult): void {
+  fsRowEl!.style.display = 'flex';
+  fsStatusEl!.textContent = result.mode === 'filesystem'
+    ? `✓ Saved to ${result.where} (${result.fileCount} files)`
+    : `↓ Downloaded to ${result.where} (${result.fileCount} files)`;
 }
+
+changeFolderBtn.addEventListener('click', async () => {
+  await clearCachedRoot();
+  fsStatusEl!.textContent = 'Folder cleared — next Copy MD will prompt again';
+});
 
 // ─── Capture click handler (outside the panel) ────────────────────────────────
 

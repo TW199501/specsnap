@@ -203,6 +203,18 @@
       background: #10b981;
       border-color: #10b981;
     }
+    .specsnap-fs-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 4px 12px;
+      font-size: 10px;
+      color: #888;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      flex-shrink: 0;
+    }
+    #specsnap-fs-status { font-family: ui-monospace, Consolas, monospace; }
     .specsnap-hint {
       padding: 4px 12px;
       font-size: 11px;
@@ -334,6 +346,11 @@
       <button id="specsnap-inspect" class="btn specsnap-inspect-btn">Start Inspect</button>
       <button id="specsnap-clear" class="btn specsnap-clear-btn" disabled>Clear</button>
       <button id="specsnap-copy" class="btn specsnap-copy-btn" disabled>Copy MD</button>
+    </div>
+
+    <div class="specsnap-fs-row" id="specsnap-fs-row" style="display:none">
+      <span id="specsnap-fs-status"></span>
+      <button id="specsnap-change-folder" class="btn specsnap-clear-btn" type="button">Change folder</button>
     </div>
 
     <div id="specsnap-hint" class="specsnap-hint">
