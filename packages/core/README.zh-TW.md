@@ -124,10 +124,11 @@ Pre-alpha（v0.0.x），schema 可能微調，v1.0 凍結
 - `v0.0.1` — 核心 capture、雙語 MD、JSON
 - `v0.0.2` — 元素間距 `Gap`
 - `v0.0.3` — `toAnnotatedPNG` 每 frame PNG、`toSpecSnapBundle` 磁碟 bundle、MD 相對路徑圖片引用
-- `v0.0.4` **（current）** — Border subpixel 顯示潤飾；playground 加入 File System Access API adapter，Copy MD 寫入使用者挑選的資料夾而不再是 Downloads/
+- `v0.0.4` — Border subpixel 顯示潤飾；playground 加入 File System Access API adapter，Copy MD 寫入使用者挑選的資料夾而不再是 Downloads/
+- `v0.0.5` **（current）** — `ElementIdentity.i18nKey` + `.source` 讀取 `data-i18n-key` / `data-v-source` 屬性；tag-triggered publish workflow 草稿。`SCHEMA_VERSION` 升到 `'0.0.5'`。
 
 Roadmap：
-- `v0.0.5` — `data-i18n-key` + `data-v-source` identity 欄位（core 讀取 build-time 注入的屬性），tag-triggered publish workflow
+- `v0.1.0+` — 配套 Vite plugin `@tw199501/specsnap-vite-plugin`，build-time 自動注入 `data-v-source` + `data-i18n-key`。Pseudo-state 擷取、recursive children dump。
 - 之後 — 元件樹感知（Vue / React）、`data-i18n-key` 反查、pseudo-state 擷取
 
 ## 授權

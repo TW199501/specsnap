@@ -70,7 +70,7 @@ Every captured element produces a `Frame` object containing:
 - **Box model** — `content`, `padding`, `border`, `margin` as 4-side tuples `[top, right, bottom, left]`
 - **Typography** — `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, `color`, `textAlign`
 - **Background** — `color`, `image`, `borderRadius` (per-corner)
-- **Identity** — `tagName`, `id`, `classList`, semantic `name` (e.g. `button#save`), unique `domPath` with `:nth-of-type()` disambiguation
+- **Identity** — `tagName`, `id`, `classList`, semantic `name` (e.g. `button#save`), unique `domPath` with `:nth-of-type()` disambiguation, optional `i18nKey` (when `data-i18n-key` is present), optional `source` (when `data-v-source` is present)
 - **Position** — document-relative absolute `rect` + viewport-relative `{ xPct, yPct }`
 - **Bilingual annotations** in Markdown — inline pairs: `120 (寬度) × 34 (高度) px`, `padding: 4 / 12 / 4 / 12 (上/右/下/左) (內邊距)`
 
@@ -208,11 +208,11 @@ Shipped:
 - `v0.0.1` — core capture, bilingual markdown, JSON
 - `v0.0.2` — inter-element gap distances
 - `v0.0.3` — `toAnnotatedPNG` per-frame PNG + `toSpecSnapBundle` disk-ready packaging + relative-path image refs in markdown
-- `v0.0.4` **(current)** — subpixel display polish (border rounding); playground gains File System Access API adapter so Copy MD writes into a user-picked folder instead of Downloads/
+- `v0.0.4` — subpixel display polish (border rounding); playground gains File System Access API adapter so Copy MD writes into a user-picked folder instead of Downloads/
+- `v0.0.5` **(current)** — `ElementIdentity.i18nKey` + `.source` read from `data-i18n-key` / `data-v-source` attributes when present; tag-triggered publish workflow draft. `SCHEMA_VERSION` bumps to `'0.0.5'`.
 
 Roadmap:
-- `v0.0.5` — `data-i18n-key` + `data-v-source` identity fields (core reads build-time-injected attributes); tag-triggered publish workflow
-- Later — component tree awareness (Vue / React), pseudo-state capture, companion Vite plugin that injects the identity attributes
+- `v0.1.0+` — companion Vite plugin `@tw199501/specsnap-vite-plugin` that auto-injects `data-v-source` + `data-i18n-key` at build time. Pseudo-state capture, recursive children dump.
 
 ## License
 

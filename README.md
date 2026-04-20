@@ -34,6 +34,12 @@ SpecSnap removes step 2. You click what's wrong. AI reads structured data that c
 
 Pre-alpha (v0.0.x) — schema may change. Locking in at v1.0.
 
+### What v0.0.5 brought
+
+- **`data-i18n-key` / `data-v-source` reverse lookup** — when a build-time tool has injected these attributes, core reads them into `ElementIdentity.i18nKey` and `.source`, and the MD's Basics section emits matching lines. AI can now do i18n key lookups and source-file navigation without grep.
+- **Tag-triggered publish workflow** — `.github/workflows/publish.yml` auto-publishes on `core@*` tag push once `NPM_TOKEN` secret is added.
+- `SCHEMA_VERSION` bumps to `'0.0.5'` (first wire-format change since 0.0.2; all additions are optional fields, no breaks).
+
 ### What v0.0.4 brought
 
 - **File System Access API adapter** in the playground — Copy MD writes into a user-picked folder (Chrome / Edge 86+); older browsers fall back to Downloads/
@@ -49,7 +55,7 @@ Pre-alpha (v0.0.x) — schema may change. Locking in at v1.0.
 
 | Package | Status | Description |
 | --- | --- | --- |
-| [`@tw199501/specsnap-core`](./packages/core) | 0.0.4 | TypeScript library: capture + serialize (MD / JSON) + annotated PNG + disk-ready bundles |
+| [`@tw199501/specsnap-core`](./packages/core) | 0.0.5 | TypeScript library: capture + serialize (MD / JSON) + annotated PNG + disk-ready bundles + optional i18nKey / source |
 | `specsnap-extension` | planned | Chrome / Edge / Firefox extension wrapping core |
 | [`apps/playground`](./apps/playground) | Vite demo | Multi-select inspector demo (see screenshot above) |
 
