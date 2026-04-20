@@ -1,6 +1,6 @@
 {
   "name": "@tw199501/specsnap-core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Core capture and serialization library for SpecSnap — the AI-friendly DOM inspector",
   "license": "MIT",
   "author": "tw199501",
@@ -41,6 +41,9 @@
     "devtools",
     "bilingual"
   ],
+  "dependencies": {
+    "dom-to-image-more": "^3.5.0"
+  },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@vitest/coverage-v8": "^4.1.4",
