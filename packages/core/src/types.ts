@@ -2,7 +2,7 @@
  * SCHEMA VERSION — bump on any breaking change to exported types.
  * Consumers check Session.schemaVersion for compatibility.
  */
-export const SCHEMA_VERSION = '0.0.2';
+export const SCHEMA_VERSION = '0.0.5';
 
 /** Absolute pixel rectangle relative to the document (not the viewport). */
 export interface Rect {
@@ -59,6 +59,18 @@ export interface ElementIdentity {
   name: string;
   /** CSS selector path that uniquely locates the element. */
   domPath: string;
+  /**
+   * i18n key, read from the `data-i18n-key` attribute if a build-time tool
+   * (i18n-ally, a custom Vite plugin, etc.) injected it. Omitted when the
+   * attribute is absent — core never guesses.
+   */
+  i18nKey?: string;
+  /**
+   * Source location, e.g. `Button.vue:42-67`, read from the `data-v-source`
+   * attribute when present. Omitted when absent; the matching build-time
+   * plugin that injects this ships separately (roadmap).
+   */
+  source?: string;
 }
 
 /** A single captured frame — one inspected element. */

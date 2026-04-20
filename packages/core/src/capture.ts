@@ -143,7 +143,12 @@ function identify(el: Element): ElementIdentity {
   const classList = [...el.classList];
   const name = formatName(tagName, id, classList, el.textContent);
   const domPath = buildDomPath(el);
-  return { tagName, id, classList, name, domPath };
+  const identity: ElementIdentity = { tagName, id, classList, name, domPath };
+  const i18nKey = el.getAttribute('data-i18n-key');
+  if (i18nKey) identity.i18nKey = i18nKey;
+  const source = el.getAttribute('data-v-source');
+  if (source) identity.source = source;
+  return identity;
 }
 
 function formatName(

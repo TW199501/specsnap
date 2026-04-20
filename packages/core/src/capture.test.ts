@@ -89,6 +89,39 @@ describe('captureElement', () => {
     expect(match).not.toBeNull();
     expect(match![1]!.length).toBeLessThanOrEqual(24);
   });
+
+  it('reads data-i18n-key attribute into identity.i18nKey when present', () => {
+    clearBody();
+    const el = document.createElement('button');
+    el.setAttribute('data-i18n-key', 'general.save');
+    el.textContent = 'Save';
+    mount(el);
+    const frame = captureElement(el, 1);
+    expect(frame.identity.i18nKey).toBe('general.save');
+  });
+
+  it('leaves identity.i18nKey undefined when the attribute is absent', () => {
+    clearBody();
+    const el = mount(makeElement({ tag: 'button', text: 'Save' }));
+    const frame = captureElement(el, 1);
+    expect(frame.identity.i18nKey).toBeUndefined();
+  });
+
+  it('reads data-v-source attribute into identity.source when present', () => {
+    clearBody();
+    const el = document.createElement('button');
+    el.setAttribute('data-v-source', 'Button.vue:42-67');
+    mount(el);
+    const frame = captureElement(el, 1);
+    expect(frame.identity.source).toBe('Button.vue:42-67');
+  });
+
+  it('leaves identity.source undefined when the attribute is absent', () => {
+    clearBody();
+    const el = mount(makeElement({ tag: 'button', text: 'Save' }));
+    const frame = captureElement(el, 1);
+    expect(frame.identity.source).toBeUndefined();
+  });
 });
 
 describe('captureSession', () => {
@@ -103,7 +136,7 @@ describe('captureSession', () => {
     expect(session.frames[1]!.index).toBe(2);
     expect(session.viewport.width).toBeGreaterThan(0);
     expect(session.capturedAt).toMatch(/\d{4}-\d{2}-\d{2}T/);
-    expect(session.schemaVersion).toBe('0.0.2');
+    expect(session.schemaVersion).toBe('0.0.5');
     expect(session.id).toMatch(/^s-[a-z0-9]{6}$/);
   });
 
@@ -111,7 +144,7 @@ describe('captureSession', () => {
     const session = captureSession([]);
     expect(session.frames).toHaveLength(0);
     expect(session.viewport.width).toBeGreaterThan(0);
-    expect(session.schemaVersion).toBe('0.0.2');
+    expect(session.schemaVersion).toBe('0.0.5');
   });
 
   it('produces unique 1-based indices across many frames', () => {
