@@ -134,4 +134,11 @@ export interface AnnotatedPngOptions {
   padding?: number;
   /** Background color for transparent regions. Default: '#ffffff'. */
   background?: string;
+  /**
+   * Per-node filter. Return `false` to exclude the node (and its subtree) from
+   * the screenshot. Use this to hide the consumer's own UI chrome — live
+   * overlays, panels, toolbars — that would otherwise appear in the capture.
+   * Forwarded to dom-to-image-more.
+   */
+  filter?: (node: Node) => boolean;
 }

@@ -37,7 +37,15 @@ export async function toAnnotatedPNG(
   for (const frame of session.frames) {
     const overlay = mountOverlay(session, bbox, frame.index, options);
     try {
-      const blob = await toBlob(document.body, {
+      const blobOptions: {
+        width: number;
+        height: number;
+        pixelRatio: number;
+        bgcolor: string;
+        quality: number;
+        style: Partial<CSSStyleDeclaration>;
+        filter?: (node: Node) => boolean;
+      } = {
         width: bbox.width,
         height: bbox.height,
         pixelRatio,
@@ -47,7 +55,15 @@ export async function toAnnotatedPNG(
           transform: `translate(${-bbox.x}px, ${-bbox.y}px)`,
           transformOrigin: '0 0'
         } as Partial<CSSStyleDeclaration>
-      });
+      };
+      // Combine user filter with our own: always include the overlay we injected.
+      const userFilter = options.filter;
+      blobOptions.filter = (node: Node) => {
+        // Allow the overlay we mounted — it holds this frame's annotation SVG.
+        if (node === overlay || overlay.contains(node as Node)) return true;
+        return userFilter ? userFilter(node) : true;
+      };
+      const blob = await toBlob(document.body, blobOptions);
       blobs.push(blob);
     }
     finally {

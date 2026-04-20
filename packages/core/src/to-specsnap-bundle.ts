@@ -23,6 +23,7 @@ export interface SpecSnapBundleOptions {
   pixelRatio?: number;
   padding?: number;
   background?: string;
+  filter?: (node: Node) => boolean;
 }
 
 export interface SpecSnapBundleImage {
@@ -102,6 +103,7 @@ export async function toSpecSnapBundle(
   if (options.pixelRatio !== undefined) pngOptions.pixelRatio = options.pixelRatio;
   if (options.padding !== undefined) pngOptions.padding = options.padding;
   if (options.background !== undefined) pngOptions.background = options.background;
+  if (options.filter !== undefined) pngOptions.filter = options.filter;
 
   const blobs = await toAnnotatedPNG(session, pngOptions);
   const mdTexts = toMarkdown(session, { imageFilenames });
