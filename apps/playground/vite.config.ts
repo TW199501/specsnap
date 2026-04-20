@@ -1,10 +1,15 @@
 import { defineConfig } from 'vite';
 
-// Port 5173 is Vite's default and collides with many other Vite-based projects.
-// 5999 is our chosen fixed port; if it's also taken, Vite falls back to the
-// next free port and prints the actual URL to stdout.
+// Port 5999 is fixed — we advertise this port publicly, so letting Vite
+// silently drift to 6000/6001 when it's busy would make our docs lie.
+// Two layers protect the contract:
+//   1. `predev` npm script runs scripts/kill-port.mjs 5999 to free the port
+//      before Vite starts (handles the common "zombie dev server" case).
+//   2. `strictPort: true` makes Vite fail loudly if 5999 is STILL taken
+//      (e.g. kill didn't have permission) instead of drifting up.
 export default defineConfig({
   server: {
-    port: 5999
+    port: 5999,
+    strictPort: true
   }
 });

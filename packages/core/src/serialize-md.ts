@@ -52,7 +52,7 @@ function renderFrame(
     `- **name**: \`${identity.name}\``,
     `- **dom_path**: \`${identity.domPath}\``,
     `- **position**: (${rect.x}, ${rect.y}) · viewport-relative (${viewportRelative.xPct}%, ${viewportRelative.yPct}%)`,
-    `- **size**: ${rect.width} × ${rect.height} px${a('width')} ×${a('height')}`,
+    `- **size**: ${rect.width}${a('width')} × ${rect.height}${a('height')} px`,
     '',
     '## 盒模型 (Box Model)',
     `- content: ${boxModel.content.width} × ${boxModel.content.height} px`,

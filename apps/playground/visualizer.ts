@@ -266,12 +266,24 @@ export interface FrameForDiagram {
   boxModel: BoxModelInput;
 }
 
+export interface RenderBoxModelsOptions {
+  /**
+   * Use a more compact diagram size — intended for narrow containers like
+   * the floating inspector panel. Default: false (full 360×220 diagram).
+   */
+  compact?: boolean;
+}
+
 /**
  * Render N box model diagrams into the given container, one per captured frame.
  * Each card has the element's identity name + numbered badge as a header,
  * matching the badge number on the on-page overlay.
  */
-export function renderBoxModels(container: HTMLElement, frames: readonly FrameForDiagram[]): void {
+export function renderBoxModels(
+  container: HTMLElement,
+  frames: readonly FrameForDiagram[],
+  options: RenderBoxModelsOptions = {}
+): void {
   removeAllChildren(container);
   for (const frame of frames) {
     const card = document.createElement('div');
@@ -293,7 +305,7 @@ export function renderBoxModels(container: HTMLElement, frames: readonly FrameFo
     card.appendChild(header);
 
     const svgHolder = document.createElement('div');
-    drawBoxModelSvg(svgHolder, frame.boxModel);
+    drawBoxModelSvg(svgHolder, frame.boxModel, options.compact === true);
     card.appendChild(svgHolder);
 
     container.appendChild(card);
@@ -302,17 +314,22 @@ export function renderBoxModels(container: HTMLElement, frames: readonly FrameFo
 
 /**
  * Render a single box model diagram into the given container. Clears the container first.
- * Diagram is a fixed 360×220 SVG — sizes inside it are schematic (not to scale)
- * so a 0-margin element is still readable alongside a 40px-content element.
  */
-export function renderBoxModel(container: HTMLElement, box: BoxModelInput): void {
+export function renderBoxModel(
+  container: HTMLElement,
+  box: BoxModelInput,
+  options: RenderBoxModelsOptions = {}
+): void {
   removeAllChildren(container);
-  drawBoxModelSvg(container, box);
+  drawBoxModelSvg(container, box, options.compact === true);
 }
 
-function drawBoxModelSvg(container: HTMLElement, box: BoxModelInput): void {
-  const W = 360;
-  const H = 220;
+function drawBoxModelSvg(container: HTMLElement, box: BoxModelInput, compact: boolean): void {
+  // Diagram is schematic, not to scale — a 0-margin element remains readable
+  // alongside a 40px-content one. Compact mode trims width/height for the
+  // floating panel without reflowing labels.
+  const W = compact ? 320 : 360;
+  const H = compact ? 160 : 220;
   const svg = createSvg('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }) as SVGSVGElement;
   svg.style.display = 'block';
 
@@ -326,7 +343,7 @@ function drawBoxModelSvg(container: HTMLElement, box: BoxModelInput): void {
     { color: BM_PADDING, label: 'padding', values: box.padding }
   ];
 
-  const INSET = 22;
+  const INSET = compact ? 18 : 22;
   for (let i = 0; i < layers.length; i++) {
     const layer = layers[i]!;
     const x = INSET * (i + 1);
@@ -355,10 +372,13 @@ function drawBoxModelSvg(container: HTMLElement, box: BoxModelInput): void {
     addNumber(svg, left, x + 8, y + h / 2 + 3, 'start');
   }
 
-  // Content rect must sit inside the padding layer so padding's 4 edge numbers
-  // stay visible — use one extra INSET beyond the padding layer.
-  const cx = INSET * (layers.length + 1);
-  const cy = INSET * (layers.length + 1);
+  // Content rect sits inside the padding layer. The extra breathing room
+  // beyond INSET*(layers.length+1) is the clearance that keeps padding's
+  // side numbers (e.g. the '12's in 'padding: 4 12 4 12') from being
+  // nudged by the content rect edge.
+  const contentExtraInset = compact ? 8 : 10;
+  const cx = INSET * (layers.length + 1) + contentExtraInset;
+  const cy = INSET * (layers.length + 1) + contentExtraInset;
   const cw = W - cx * 2;
   const ch = H - cy * 2;
   svg.appendChild(createSvg('rect', {
@@ -369,10 +389,12 @@ function drawBoxModelSvg(container: HTMLElement, box: BoxModelInput): void {
     x: cx + cw / 2, y: cy + ch / 2 + 4,
     fill: '#fff',
     'font-family': 'system-ui, sans-serif',
-    'font-size': 14, 'font-weight': 700,
+    'font-size': compact ? 12 : 14, 'font-weight': 700,
     'text-anchor': 'middle'
   });
-  sizeText.textContent = `${Math.round(box.content.width)} × ${Math.round(box.content.height)}`;
+  // Use the multiplication sign without surrounding spaces so the label
+  // stays narrow — helps keep clear of the padding side numbers on either edge.
+  sizeText.textContent = `${Math.round(box.content.width)}×${Math.round(box.content.height)}`;
   svg.appendChild(sizeText);
 
   container.appendChild(svg);

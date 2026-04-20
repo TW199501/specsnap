@@ -59,36 +59,12 @@
       line-height: 1.5;
       width: 200px;
     }
-    .section-h {
-      font-size: 14px;
-      text-transform: uppercase;
-      color: #666;
-      margin: 0 0 12px;
-    }
-    /* ── Box model debug panel (playground-only) ───── */
-    .box-model-section { margin-bottom: 24px; }
-    #box-model {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-      gap: 16px;
-    }
-    #box-model:empty::before {
-      content: 'Box models will render here — one card per captured element.';
-      grid-column: 1 / -1;
-      display: block;
-      padding: 48px 20px;
-      text-align: center;
-      color: #888;
-      font-size: 13px;
-      background: #fafafa;
-      border: 1px dashed #ddd;
-      border-radius: 8px;
-    }
+    /* ── Box model cards (rendered INSIDE the floating panel) ── */
     .box-model-card {
       background: #fff;
       border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 12px;
+      border-radius: 6px;
+      padding: 10px;
     }
     .box-model-header {
       display: flex;
@@ -255,33 +231,25 @@
       overflow: auto;
       position: relative;
     }
-    .specsnap-thumbs {
+    /* Box model cards container inside the panel */
+    .specsnap-boxmodels {
       display: flex;
       flex-direction: column;
       gap: 8px;
       padding: 10px 12px 4px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
-    .specsnap-thumbs:empty { display: none; }
-    .specsnap-thumb {
+    .specsnap-boxmodels:empty { display: none; }
+    .specsnap-boxmodels .box-model-header {
+      font-size: 12px;
+    }
+    .specsnap-boxmodels .box-model-badge {
+      width: 18px; height: 18px;
+      font-size: 10px;
+    }
+    .specsnap-boxmodels svg {
       display: block;
       max-width: 100%;
-      max-height: 200px;
-      border: 1px solid #e5e7eb;
-      border-radius: 4px;
-      background: #fafafa;
-    }
-    .specsnap-thumb-label {
-      font-size: 10px;
-      color: #666;
-      font-family: ui-monospace, Consolas, monospace;
-      margin-top: -2px;
-    }
-    .specsnap-thumbs-status {
-      padding: 6px 12px;
-      font-size: 11px;
-      color: #888;
-      font-style: italic;
     }
     .specsnap-pre {
       margin: 0;
@@ -348,11 +316,6 @@
     </div>
   </div>
 
-  <div class="box-model-section">
-    <h2 class="section-h">Box Models · playground debug aid</h2>
-    <div id="box-model"></div>
-  </div>
-
   <!-- Overlay: SVG outlines drawn on top of the whole page -->
   <div id="specsnap-overlay"></div>
 
@@ -378,8 +341,7 @@
     </div>
 
     <div class="specsnap-content">
-      <div id="specsnap-thumbs" class="specsnap-thumbs"></div>
-      <div id="specsnap-thumbs-status" class="specsnap-thumbs-status" style="display:none"></div>
+      <div id="specsnap-boxmodels" class="specsnap-boxmodels"></div>
       <pre id="specsnap-output" class="specsnap-pre" style="display:none"></pre>
       <div id="specsnap-empty" class="specsnap-empty">
         <div style="font-size:32px;opacity:0.5">⌖</div>

@@ -2,7 +2,6 @@ import {
   captureSession,
   formatCaptureId,
   formatDateYYYYMMDD,
-  toAnnotatedPNG,
   toJSON,
   toMarkdown,
   toSpecSnapBundle
@@ -20,91 +19,17 @@ const copyBtn = document.getElementById('specsnap-copy') as HTMLButtonElement | 
 const hintEl = document.getElementById('specsnap-hint') as HTMLDivElement | null;
 const outputEl = document.getElementById('specsnap-output') as HTMLPreElement | null;
 const emptyEl = document.getElementById('specsnap-empty') as HTMLDivElement | null;
-const thumbsEl = document.getElementById('specsnap-thumbs') as HTMLDivElement | null;
-const thumbsStatusEl = document.getElementById('specsnap-thumbs-status') as HTMLDivElement | null;
+const boxmodelsEl = document.getElementById('specsnap-boxmodels') as HTMLDivElement | null;
 const jsonEl = document.getElementById('specsnap-json') as HTMLPreElement | null;
 const captureIdEl = document.getElementById('specsnap-capture-id') as HTMLSpanElement | null;
-const boxModelEl = document.getElementById('box-model') as HTMLDivElement | null;
 const targetsEl = document.querySelector('.targets') as HTMLDivElement | null;
 
 if (
   !panel || !header || !closeBtn || !inspectBtn || !clearBtn || !copyBtn
-  || !hintEl || !outputEl || !emptyEl || !thumbsEl || !thumbsStatusEl
-  || !jsonEl || !captureIdEl || !boxModelEl || !targetsEl
+  || !hintEl || !outputEl || !emptyEl || !boxmodelsEl
+  || !jsonEl || !captureIdEl || !targetsEl
 ) {
   throw new Error('playground: required elements missing');
-}
-
-// Track object URLs so we can revoke them before replacing (avoid memory leak).
-const thumbObjectUrls: string[] = [];
-
-function revokeThumbUrls(): void {
-  for (const u of thumbObjectUrls) URL.revokeObjectURL(u);
-  thumbObjectUrls.length = 0;
-}
-
-function clearThumbs(): void {
-  revokeThumbUrls();
-  while (thumbsEl!.firstChild) thumbsEl!.removeChild(thumbsEl!.firstChild);
-  thumbsStatusEl!.style.display = 'none';
-  thumbsStatusEl!.textContent = '';
-}
-
-function setThumbStatus(msg: string): void {
-  thumbsStatusEl!.textContent = msg;
-  thumbsStatusEl!.style.display = msg ? 'block' : 'none';
-}
-
-let thumbDebounceTimer: number | null = null;
-
-function scheduleThumbRender(session: Session, token: number): void {
-  if (thumbDebounceTimer !== null) {
-    clearTimeout(thumbDebounceTimer);
-  }
-  setThumbStatus(`Rendering ${session.frames.length} thumbnail${session.frames.length === 1 ? '' : 's'}…`);
-  thumbDebounceTimer = window.setTimeout(() => {
-    void renderThumbnails(session, token);
-  }, 300);
-}
-
-async function renderThumbnails(session: Session, token: number): Promise<void> {
-  try {
-    // Exclude playground's own UI chrome from the capture so each frame's PNG
-    // only shows the focused frame's annotation, not the live overlay's
-    // all-frames highlighting or the floating panel itself.
-    const blobs = await toAnnotatedPNG(session, {
-      filter: (node) => {
-        if (!(node instanceof Element)) return true;
-        if (node.id === 'specsnap-overlay') return false;
-        if (node.id === 'specsnap-panel') return false;
-        return true;
-      }
-    });
-    if (token !== renderToken) return;
-    revokeThumbUrls();
-    while (thumbsEl!.firstChild) thumbsEl!.removeChild(thumbsEl!.firstChild);
-    blobs.forEach((blob, i) => {
-      const url = URL.createObjectURL(blob);
-      thumbObjectUrls.push(url);
-      const wrapper = document.createElement('div');
-      const img = document.createElement('img');
-      img.className = 'specsnap-thumb';
-      img.src = url;
-      img.alt = `Frame ${i + 1} annotated`;
-      const label = document.createElement('div');
-      label.className = 'specsnap-thumb-label';
-      label.textContent = `Frame ${i + 1} · ${session.frames[i]!.identity.name}`;
-      wrapper.appendChild(img);
-      wrapper.appendChild(label);
-      thumbsEl!.appendChild(wrapper);
-    });
-    setThumbStatus('');
-  }
-  catch (err) {
-    if (token !== renderToken) return;
-    console.error('[specsnap] thumbnail render failed:', err);
-    setThumbStatus(`Thumbnail render failed: ${String(err instanceof Error ? err.message : err)}`);
-  }
 }
 
 // ─── Daily sequence counter (localStorage) ────────────────────────────────────
@@ -123,7 +48,6 @@ function commitDailySequence(sequence: number): void {
   localStorage.setItem(`specsnap-daily-count-${today}`, String(sequence));
 }
 
-// Preview the NEXT sequence number in the header so user knows what filename this capture will get.
 function refreshCaptureIdPreview(): void {
   const { captureId } = nextDailySequence();
   captureIdEl!.textContent = `· next: ${captureId}`;
@@ -134,9 +58,8 @@ function refreshCaptureIdPreview(): void {
 let inspecting = false;
 let selections: Element[] = [];
 let lastGaps: Gap[] = [];
-let renderToken = 0;
 
-// ─── Initial panel position — right side, below top bar ───────────────────────
+// ─── Initial panel position ───────────────────────────────────────────────────
 
 const PANEL_W = 420;
 const PANEL_H = 540;
@@ -220,15 +143,12 @@ function showEmpty(): void {
   emptyEl!.style.display = 'flex';
   outputEl!.textContent = '';
   jsonEl!.textContent = '';
-  clearThumbs();
+  removeAllChildren(boxmodelsEl!);
 }
 
 function renderLive(): void {
-  const token = ++renderToken;
-
   if (selections.length === 0) {
     clearOverlay();
-    removeAllChildren(boxModelEl!);
     showEmpty();
     lastGaps = [];
     clearBtn!.disabled = true;
@@ -240,26 +160,24 @@ function renderLive(): void {
   lastGaps = session.gaps;
 
   renderOverlay(selections, session.gaps);
+
+  // Box model diagrams — rendered inline in the panel, one compact card per frame.
   renderBoxModels(
-    boxModelEl!,
+    boxmodelsEl!,
     session.frames.map((f) => ({
       index: f.index,
       name: f.identity.name,
       boxModel: f.boxModel
-    }))
+    })),
+    { compact: true }
   );
 
-  // Preview the MD that will be copied (no image filenames yet — user sees the shape).
-  // On Copy, toSpecSnapBundle injects ![Frame N](./…png) references.
   const preview = toMarkdown(session).join('\n\n---\n\n');
   showOutput(preview);
   jsonEl!.textContent = toJSON(session);
 
   clearBtn!.disabled = false;
   copyBtn!.disabled = false;
-
-  // Async: render annotated PNG thumbnails (debounced, so rapid clicks don't thrash).
-  scheduleThumbRender(session, token);
 }
 
 // ─── Controls ─────────────────────────────────────────────────────────────────
@@ -298,15 +216,6 @@ closeBtn.addEventListener('click', (e) => {
   panel!.style.display = 'none';
 });
 
-/**
- * Copy MD action:
- *   1. Bundle the session (MD text + PNG Blobs named YYYYMMDD-NN-k.png)
- *   2. Write the MD (with ./*.png refs) to clipboard
- *   3. Trigger browser downloads for each PNG + the MD file itself
- *      — user ends up with all the files named right, drop them into
- *      specsnap/YYYYMMDD/ on disk manually.
- *   4. Bump the daily sequence in localStorage so the next capture gets NN+1.
- */
 copyBtn.addEventListener('click', async () => {
   if (selections.length === 0) return;
   copyBtn!.disabled = true;
@@ -393,7 +302,6 @@ window.addEventListener('scroll', () => {
   if (selections.length) renderOverlay(selections, lastGaps);
 }, { passive: true });
 
-// Initial state
 refreshInspectBtn();
 refreshHint();
 refreshCaptureIdPreview();

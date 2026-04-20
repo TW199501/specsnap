@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/kill-port.mjs 5999",
     "dev": "vite"
   },
   "dependencies": {
