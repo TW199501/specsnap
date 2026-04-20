@@ -73,3 +73,61 @@ describe('numbered badges', () => {
     expect(svg.querySelectorAll('[data-role="badge"]').length).toBe(0);
   });
 });
+
+describe('gap markers', () => {
+  it('draws a horizontal gap line between two side-by-side frames', () => {
+    const svg = buildAnnotationSvg({
+      frames: [
+        { index: 1, bounds: { x: 0, y: 50, width: 100, height: 50 } },
+        { index: 2, bounds: { x: 150, y: 50, width: 100, height: 50 } }
+      ],
+      gaps: [{ from: 1, to: 2, axis: 'horizontal', px: 50 }],
+      canvas: { width: 400, height: 200 }
+    });
+    const gapLine = svg.querySelector('line[data-role="gap-main"]');
+    expect(gapLine).not.toBeNull();
+    expect(gapLine!.getAttribute('x1')).toBe('100');
+    expect(gapLine!.getAttribute('x2')).toBe('150');
+    const label = svg.querySelector('[data-role="gap-label"]');
+    expect(label?.textContent).toBe('50px');
+  });
+
+  it('draws a vertical gap line between two stacked frames', () => {
+    const svg = buildAnnotationSvg({
+      frames: [
+        { index: 1, bounds: { x: 50, y: 0, width: 100, height: 50 } },
+        { index: 2, bounds: { x: 50, y: 80, width: 100, height: 50 } }
+      ],
+      gaps: [{ from: 1, to: 2, axis: 'vertical', px: 30 }],
+      canvas: { width: 300, height: 200 }
+    });
+    const gapLine = svg.querySelector('line[data-role="gap-main"]');
+    expect(gapLine).not.toBeNull();
+    expect(gapLine!.getAttribute('y1')).toBe('50');
+    expect(gapLine!.getAttribute('y2')).toBe('80');
+  });
+
+  it('skips gap markers when referenced frame index is missing', () => {
+    const svg = buildAnnotationSvg({
+      frames: [{ index: 1, bounds: { x: 0, y: 0, width: 10, height: 10 } }],
+      gaps: [{ from: 1, to: 99, axis: 'horizontal', px: 5 }],
+      canvas: { width: 100, height: 100 }
+    });
+    expect(svg.querySelectorAll('[data-role="gap-main"]').length).toBe(0);
+  });
+
+  it('omits all gap markers when options.gaps === false', () => {
+    const svg = buildAnnotationSvg(
+      {
+        frames: [
+          { index: 1, bounds: { x: 0, y: 50, width: 100, height: 50 } },
+          { index: 2, bounds: { x: 150, y: 50, width: 100, height: 50 } }
+        ],
+        gaps: [{ from: 1, to: 2, axis: 'horizontal', px: 50 }],
+        canvas: { width: 400, height: 200 }
+      },
+      { gaps: false }
+    );
+    expect(svg.querySelectorAll('[data-role="gap-main"]').length).toBe(0);
+  });
+});
