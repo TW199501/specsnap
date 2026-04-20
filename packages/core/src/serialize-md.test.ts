@@ -124,3 +124,48 @@ describe('toMarkdown', () => {
     expect(md!).not.toContain('間距 (Gaps)');
   });
 });
+
+describe('border subpixel display', () => {
+  it('rounds fractional border widths to the nearest CSS pixel in MD output', () => {
+    const session = {
+      schemaVersion: '0.0.2' as const,
+      id: 's-test',
+      capturedAt: '2026-04-20T00:00:00Z',
+      url: '',
+      pageTitle: '',
+      viewport: { width: 1000, height: 800, devicePixelRatio: 1.5 },
+      scroll: { x: 0, y: 0 },
+      frames: [{
+        index: 1,
+        identity: {
+          tagName: 'input',
+          id: 'username',
+          classList: [],
+          name: 'input#username',
+          domPath: 'input#username'
+        },
+        rect: { x: 0, y: 0, width: 245, height: 43 },
+        viewportRelative: { xPct: 0, yPct: 0 },
+        boxModel: {
+          content: { width: 219, height: 33 },
+          padding: [4, 12, 4, 12] as const,
+          border: [0.67, 0.67, 0.67, 0.67] as const,
+          margin: [0, 0, 0, 0] as const
+        },
+        typography: {
+          fontFamily: 'Arial', fontSize: 13, fontWeight: '400',
+          lineHeight: 'normal', letterSpacing: 'normal',
+          color: 'rgb(0,0,0)', textAlign: 'start'
+        },
+        background: {
+          color: 'rgb(255,255,255)', image: 'none',
+          borderRadius: [6, 6, 6, 6] as const
+        }
+      }],
+      gaps: []
+    };
+    const md = toMarkdown(session).join('\n');
+    expect(md).toContain('border: 1 / 1 / 1 / 1');
+    expect(md).not.toContain('0.67');
+  });
+});

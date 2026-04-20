@@ -57,7 +57,7 @@ function renderFrame(
     '## 盒模型 (Box Model)',
     `- content: ${boxModel.content.width} × ${boxModel.content.height} px`,
     `- padding: ${pad[0]} / ${pad[1]} / ${pad[2]} / ${pad[3]} (上/右/下/左)${a('padding')}`,
-    `- border: ${bd[0]} / ${bd[1]} / ${bd[2]} / ${bd[3]}${a('border')}`,
+    `- border: ${displayPx(bd[0])} / ${displayPx(bd[1])} / ${displayPx(bd[2])} / ${displayPx(bd[3])}${a('border')}`,
     `- margin: ${mg[0]} / ${mg[1]} / ${mg[2]} / ${mg[3]}${a('margin')}`,
     '',
     '## 字體 (Typography)',
@@ -81,4 +81,20 @@ function renderFrame(
         ]
       : [])
   ].join('\n');
+}
+
+/**
+ * Display helper for potentially-subpixel border values.
+ * Fractional widths like 0.67 (from a DPR 1.5 screen rendering a 1 CSS px
+ * border) or 1.33 (DPR 1.5 × 2px) read as noise in a human-facing MD.
+ * Round unconditionally *unless* the value is exactly half a pixel — an
+ * intentional `border: 0.5px` design still prints as 0.5 because
+ * `Math.abs(0.5 - Math.round(0.5)) === 0.5` is NOT `< 0.5`.
+ * JSON output is unaffected; consumers that need exact precision read
+ * `session.frames[i].boxModel.border` directly.
+ */
+function displayPx(v: number): string {
+  const rounded = Math.round(v);
+  if (Math.abs(v - rounded) < 0.5) return String(rounded);
+  return String(v);
 }
