@@ -2,6 +2,7 @@ export const VERSION = '0.0.1';
 
 export {
   SCHEMA_VERSION,
+  type AnnotatedPngOptions,
   type Background,
   type BoxModel,
   type ElementIdentity,
@@ -27,3 +28,13 @@ export { toJSON } from './serialize-json.js';
 
 export { computeGap } from './gap.js';
 export type { Gap, GapAxis } from './types.js';
+
+export {
+  buildAnnotationSvg,
+  type AnnotateBounds,
+  type AnnotateFrameInput,
+  type AnnotateInput,
+  type AnnotateOptions
+} from './annotate.js';
+
+export { toAnnotatedPNG } from './to-annotated-png.js';
