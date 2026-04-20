@@ -20,3 +20,19 @@ describe('mockShowDirectoryPicker (test helper)', () => {
     expect(isFileSystemAccessSupported(fakeWindow)).toBe(true);
   });
 });
+
+describe('persisted root handle', () => {
+  it('returns null when nothing is cached', async () => {
+    const { loadCachedRootHandle } = await import('./fs-access.js');
+    const result = await loadCachedRootHandle('specsnap-test-store-empty');
+    expect(result).toBeNull();
+  });
+
+  it('returns the cached handle after saveCachedRootHandle', async () => {
+    const { loadCachedRootHandle, saveCachedRootHandle } = await import('./fs-access.js');
+    const fake = { name: 'my-folder' };
+    await saveCachedRootHandle('specsnap-test-store-roundtrip', fake as unknown as FileSystemDirectoryHandle);
+    const loaded = await loadCachedRootHandle('specsnap-test-store-roundtrip');
+    expect((loaded as unknown as { name: string } | null)?.name).toBe('my-folder');
+  });
+});

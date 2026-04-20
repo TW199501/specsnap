@@ -12,6 +12,7 @@
     "@tw199501/specsnap-core": "workspace:*"
   },
   "devDependencies": {
+    "fake-indexeddb": "^6.0.0",
     "happy-dom": "^20.9.0",
     "vite": "^8.0.9",
     "vitest": "^4.1.4"

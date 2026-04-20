@@ -40,3 +40,57 @@ export function isFileSystemAccessSupported(win: Window): boolean {
 export function mockShowDirectoryPicker(handle: unknown) {
   return () => Promise.resolve(handle);
 }
+
+// ─── IndexedDB persistence ────────────────────────────────────────────────────
+// FileSystemDirectoryHandle is serializable only via IndexedDB's structured
+// clone algorithm — you can't JSON it. This layer persists a single "root"
+// handle per db name so the user's folder choice survives page reloads.
+
+const DB_VERSION = 1;
+const STORE_NAME = 'handles';
+
+function openDb(dbName: string): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(dbName, DB_VERSION);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(STORE_NAME);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error ?? new Error('IndexedDB open failed'));
+  });
+}
+
+export async function saveCachedRootHandle(
+  dbName: string,
+  handle: FileSystemDirectoryHandle
+): Promise<void> {
+  const db = await openDb(dbName);
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).put(handle, 'root');
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error ?? new Error('IndexedDB put failed'));
+    });
+  }
+  finally {
+    db.close();
+  }
+}
+
+export async function loadCachedRootHandle(
+  dbName: string
+): Promise<FileSystemDirectoryHandle | null> {
+  const db = await openDb(dbName);
+  try {
+    return await new Promise<FileSystemDirectoryHandle | null>((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const req = tx.objectStore(STORE_NAME).get('root');
+      req.onsuccess = () => resolve((req.result as FileSystemDirectoryHandle | undefined) ?? null);
+      req.onerror = () => reject(req.error ?? new Error('IndexedDB get failed'));
+    });
+  }
+  finally {
+    db.close();
+  }
+}
