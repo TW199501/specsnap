@@ -202,16 +202,17 @@ The playground app in this repo uses the `<a download>` approach as a reference 
 
 ## Status
 
-🚧 **Pre-alpha (v0.0.x).** Schema may change. Locking in at v1.0.
+Pre-alpha (v0.0.x). Schema may change. Locking in at v1.0.
 
 Shipped:
 - `v0.0.1` — core capture, bilingual markdown, JSON
 - `v0.0.2` — inter-element gap distances
-- `v0.0.3` **(current)** — `toAnnotatedPNG` per-frame PNG + `toSpecSnapBundle` disk-ready packaging + relative-path image refs in markdown
+- `v0.0.3` — `toAnnotatedPNG` per-frame PNG + `toSpecSnapBundle` disk-ready packaging + relative-path image refs in markdown
+- `v0.0.4` **(current)** — subpixel display polish (border rounding); playground gains File System Access API adapter so Copy MD writes into a user-picked folder instead of Downloads/
 
 Roadmap:
-- `v0.0.4` — consumer-agnostic filesystem write helpers (File System Access API wrapper, extension `chrome.downloads` helper); subpixel value display polish
-- Later — component tree awareness (Vue / React), `data-i18n-key` reverse lookup, pseudo-state capture
+- `v0.0.5` — `data-i18n-key` + `data-v-source` identity fields (core reads build-time-injected attributes); tag-triggered publish workflow
+- Later — component tree awareness (Vue / React), pseudo-state capture, companion Vite plugin that injects the identity attributes
 
 ## License
 

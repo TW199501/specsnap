@@ -13,11 +13,11 @@
 
 Click multiple elements on a page. SpecSnap captures them all at once with:
 
-- 🔢 **Numbered badges** that link the on-page overlay, the box-model panel, and the exported Markdown — the ① you see in the browser is the same ① in the file
-- 📏 **Inter-element gaps** computed automatically (the orange "24px" / "16px" between siblings) — so AI gets spacing info, not just sizes
-- 📐 **Per-element box models** — margin / border / padding / content with numeric labels on every side
-- 🌐 **Viewport context** attached to every capture — "120px wide" is meaningless without knowing it's on a 1440px screen
-- 🈴 **Bilingual annotations** — English terms for AI precision + 繁體中文 for humans (`padding: 16px (內邊距)`)
+- **Numbered badges** that link the on-page overlay, the box-model panel, and the exported Markdown — the ① you see in the browser is the same ① in the file
+- **Inter-element gaps** computed automatically (the orange "24px" / "16px" between siblings) — so AI gets spacing info, not just sizes
+- **Per-element box models** — margin / border / padding / content with numeric labels on every side
+- **Viewport context** attached to every capture — "120px wide" is meaningless without knowing it's on a 1440px screen
+- **Bilingual annotations** — English terms for AI precision + 繁體中文 for humans (`padding: 16px (內邊距)`)
 
 ## Why
 
@@ -32,7 +32,12 @@ SpecSnap removes step 2. You click what's wrong. AI reads structured data that c
 
 ## Status
 
-🚧 **Pre-alpha (v0.0.x)** — schema may change. Locking in at v1.0.
+Pre-alpha (v0.0.x) — schema may change. Locking in at v1.0.
+
+### What v0.0.4 brought
+
+- **File System Access API adapter** in the playground — Copy MD writes into a user-picked folder (Chrome / Edge 86+); older browsers fall back to Downloads/
+- **Border subpixel display polish** — DPR 1.5 screens no longer show `0.67 / 0.67 / 0.67 / 0.67` in MD output; rounds cleanly to `1 / 1 / 1 / 1` while keeping exact precision in JSON
 
 ### What v0.0.3 brought
 
@@ -44,9 +49,9 @@ SpecSnap removes step 2. You click what's wrong. AI reads structured data that c
 
 | Package | Status | Description |
 | --- | --- | --- |
-| [`@tw199501/specsnap-core`](./packages/core) | ✅ 0.0.3 | TypeScript library: capture + serialize (MD / JSON) + annotated PNG + disk-ready bundles |
-| `specsnap-extension` | 📋 planned | Chrome / Edge / Firefox extension wrapping core |
-| [`apps/playground`](./apps/playground) | ✅ Vite demo | Multi-select inspector demo (see screenshot above) |
+| [`@tw199501/specsnap-core`](./packages/core) | 0.0.4 | TypeScript library: capture + serialize (MD / JSON) + annotated PNG + disk-ready bundles |
+| `specsnap-extension` | planned | Chrome / Edge / Firefox extension wrapping core |
+| [`apps/playground`](./apps/playground) | Vite demo | Multi-select inspector demo (see screenshot above) |
 
 ## Design Docs
 
