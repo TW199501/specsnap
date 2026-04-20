@@ -125,6 +125,38 @@ describe('toMarkdown', () => {
   });
 });
 
+describe('identity extras in MD body', () => {
+  it('emits i18n_key line in Basics when identity.i18nKey is set', () => {
+    clearBody();
+    const el = document.createElement('button');
+    el.setAttribute('data-i18n-key', 'general.save');
+    el.textContent = 'Save';
+    mount(el);
+    const session = captureSession([el]);
+    const md = toMarkdown(session)[0]!;
+    expect(md).toContain('**i18n_key**: `general.save`');
+  });
+
+  it('emits source line in Basics when identity.source is set', () => {
+    clearBody();
+    const el = document.createElement('button');
+    el.setAttribute('data-v-source', 'Button.vue:42-67');
+    mount(el);
+    const session = captureSession([el]);
+    const md = toMarkdown(session)[0]!;
+    expect(md).toContain('**source**: `Button.vue:42-67`');
+  });
+
+  it('omits both lines when neither attribute is set', () => {
+    clearBody();
+    const el = mount(makeElement({ tag: 'button', text: 'Save' }));
+    const session = captureSession([el]);
+    const md = toMarkdown(session)[0]!;
+    expect(md).not.toContain('**i18n_key**');
+    expect(md).not.toContain('**source**');
+  });
+});
+
 describe('border subpixel display', () => {
   it('rounds fractional border widths to the nearest CSS pixel in MD output', () => {
     const session = {

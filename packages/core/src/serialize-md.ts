@@ -50,6 +50,8 @@ function renderFrame(
     '',
     '## 基本 (Basics)',
     `- **name**: \`${identity.name}\``,
+    ...(identity.i18nKey ? [`- **i18n_key**: \`${identity.i18nKey}\``] : []),
+    ...(identity.source ? [`- **source**: \`${identity.source}\``] : []),
     `- **dom_path**: \`${identity.domPath}\``,
     `- **position**: (${rect.x}, ${rect.y}) · viewport-relative (${viewportRelative.xPct}%, ${viewportRelative.yPct}%)`,
     `- **size**: ${rect.width}${a('width')} × ${rect.height}${a('height')} px`,
