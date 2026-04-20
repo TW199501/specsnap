@@ -38,3 +38,5 @@ export {
 } from './annotate.js';
 
 export { toAnnotatedPNG } from './to-annotated-png.js';
+
+export { toAnnotatedMarkdown } from './to-annotated-markdown.js';

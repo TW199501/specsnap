@@ -355,8 +355,10 @@ function drawBoxModelSvg(container: HTMLElement, box: BoxModelInput): void {
     addNumber(svg, left, x + 8, y + h / 2 + 3, 'start');
   }
 
-  const cx = INSET * layers.length;
-  const cy = INSET * layers.length;
+  // Content rect must sit inside the padding layer so padding's 4 edge numbers
+  // stay visible — use one extra INSET beyond the padding layer.
+  const cx = INSET * (layers.length + 1);
+  const cy = INSET * (layers.length + 1);
   const cw = W - cx * 2;
   const ch = H - cy * 2;
   svg.appendChild(createSvg('rect', {

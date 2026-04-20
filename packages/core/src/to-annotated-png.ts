@@ -4,45 +4,57 @@ import type { AnnotatedPngOptions, Session } from './types.js';
 const OVERLAY_ID = 'specsnap-capture-overlay';
 
 /**
- * Render a session as an annotated PNG (or JPEG) Blob. Browser-only.
+ * Render each frame of a session as its own annotated PNG Blob.
  *
- * Computes the minimum bounding box over session frames, injects an SVG
- * annotation layer, invokes `dom-to-image-more` with a transform-based crop,
- * then cleans up. `dom-to-image-more` is dynamic-imported — consumers who
- * only use `toJSON`/`toMarkdown` don't pay the bundle cost.
+ * Returns one Blob per frame in `session.frames` order. Each PNG:
+ *  - Shares the same bounding box (union of all frames' rects + padding), so
+ *    every PNG shows the full session context
+ *  - Only the "focus" frame gets outline + badge + size label; other frames'
+ *    pixels are visible via the page screenshot but are not annotated
+ *  - All gap lines from the session are drawn (session relationship preserved)
+ *
+ * `dom-to-image-more` is dynamic-imported so consumers that only use
+ * `toJSON`/`toMarkdown` don't pay the bundle cost.
  */
 export async function toAnnotatedPNG(
   session: Session,
   options: AnnotatedPngOptions = {}
-): Promise<Blob> {
+): Promise<Blob[]> {
   if (session.frames.length === 0) {
     throw new Error('SpecSnap: cannot screenshot an empty session (no frames)');
   }
 
   const padding = options.padding ?? 16;
   const bbox = computeBbox(session, padding);
-  const overlay = mountOverlay(session, bbox, options);
+  const pixelRatio = options.pixelRatio ?? session.viewport.devicePixelRatio ?? 1;
+  const bgcolor = options.background ?? '#ffffff';
+  const quality = options.quality ?? 0.92;
 
-  try {
-    const dtim = await import('dom-to-image-more');
-    const toBlob = dtim.default?.toBlob ?? dtim.toBlob;
-    const pixelRatio = options.pixelRatio ?? session.viewport.devicePixelRatio ?? 1;
-    const blob = await toBlob(document.body, {
-      width: bbox.width,
-      height: bbox.height,
-      pixelRatio,
-      bgcolor: options.background ?? '#ffffff',
-      quality: options.quality ?? 0.92,
-      style: {
-        transform: `translate(${-bbox.x}px, ${-bbox.y}px)`,
-        transformOrigin: '0 0'
-      } as Partial<CSSStyleDeclaration>
-    });
-    return blob;
+  const dtim = await import('dom-to-image-more');
+  const toBlob = dtim.default?.toBlob ?? dtim.toBlob;
+
+  const blobs: Blob[] = [];
+  for (const frame of session.frames) {
+    const overlay = mountOverlay(session, bbox, frame.index, options);
+    try {
+      const blob = await toBlob(document.body, {
+        width: bbox.width,
+        height: bbox.height,
+        pixelRatio,
+        bgcolor,
+        quality,
+        style: {
+          transform: `translate(${-bbox.x}px, ${-bbox.y}px)`,
+          transformOrigin: '0 0'
+        } as Partial<CSSStyleDeclaration>
+      });
+      blobs.push(blob);
+    }
+    finally {
+      overlay.remove();
+    }
   }
-  finally {
-    overlay.remove();
-  }
+  return blobs;
 }
 
 function computeBbox(session: Session, padding: number): {
@@ -73,6 +85,7 @@ function computeBbox(session: Session, padding: number): {
 function mountOverlay(
   session: Session,
   bbox: { x: number; y: number; width: number; height: number },
+  focusFrame: number,
   options: AnnotatedPngOptions
 ): HTMLDivElement {
   const host = document.createElement('div');
@@ -91,7 +104,8 @@ function mountOverlay(
     badges?: boolean;
     gaps?: boolean;
     sizeLabels?: boolean;
-  } = {};
+    focusFrame: number;
+  } = { focusFrame };
   if (options.badges !== undefined) annotateOptions.badges = options.badges;
   if (options.gaps !== undefined) annotateOptions.gaps = options.gaps;
   if (options.sizeLabels !== undefined) annotateOptions.sizeLabels = options.sizeLabels;

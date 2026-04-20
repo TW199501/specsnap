@@ -21,16 +21,20 @@ describe('toAnnotatedPNG', () => {
     await expect(toAnnotatedPNG(session)).rejects.toThrow(/empty|no frames/i);
   });
 
-  it('returns a Blob for a non-empty session', async () => {
-    const el = mount(makeElement({ id: 'x', text: 'hi' }));
-    const session = captureSession([el]);
-    const blob = await toAnnotatedPNG(session);
-    expect(blob).toBeInstanceOf(Blob);
+  it('returns one Blob per frame', async () => {
+    const a = mount(makeElement({ id: 'a', text: 'A' }));
+    const b = mount(makeElement({ id: 'b', text: 'B' }));
+    const c = mount(makeElement({ id: 'c', text: 'C' }));
+    const session = captureSession([a, b, c]);
+    const blobs = await toAnnotatedPNG(session);
+    expect(blobs).toHaveLength(3);
+    for (const blob of blobs) expect(blob).toBeInstanceOf(Blob);
   });
 
-  it('removes the injected overlay SVG after capture', async () => {
-    const el = mount(makeElement({ id: 'x', text: 'hi' }));
-    const session = captureSession([el]);
+  it('removes the injected overlay SVG after each frame capture', async () => {
+    const a = mount(makeElement({ id: 'a', text: 'A' }));
+    const b = mount(makeElement({ id: 'b', text: 'B' }));
+    const session = captureSession([a, b]);
     await toAnnotatedPNG(session);
     expect(document.getElementById('specsnap-capture-overlay')).toBeNull();
   });
@@ -44,5 +48,18 @@ describe('toAnnotatedPNG', () => {
     const session = captureSession([el]);
     await expect(toAnnotatedPNG(session)).rejects.toThrow(/render failure/);
     expect(document.getElementById('specsnap-capture-overlay')).toBeNull();
+  });
+
+  it('invokes toBlob once per frame (one render pass each)', async () => {
+    const mod = await import('dom-to-image-more');
+    const toBlob = mod.default.toBlob as ReturnType<typeof vi.fn>;
+    toBlob.mockClear();
+    toBlob.mockImplementation(async () => new Blob(['fake'], { type: 'image/png' }));
+
+    const a = mount(makeElement({ id: 'a', text: 'A' }));
+    const b = mount(makeElement({ id: 'b', text: 'B' }));
+    const session = captureSession([a, b]);
+    await toAnnotatedPNG(session);
+    expect(toBlob).toHaveBeenCalledTimes(2);
   });
 });

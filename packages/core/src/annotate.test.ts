@@ -131,3 +131,45 @@ describe('gap markers', () => {
     expect(svg.querySelectorAll('[data-role="gap-main"]').length).toBe(0);
   });
 });
+
+describe('focusFrame option', () => {
+  it('draws outline/badge/sizeLabel only for the focused frame', () => {
+    const svg = buildAnnotationSvg(
+      {
+        frames: [
+          { index: 1, bounds: { x: 0, y: 50, width: 100, height: 50 } },
+          { index: 2, bounds: { x: 150, y: 50, width: 100, height: 50 } },
+          { index: 3, bounds: { x: 300, y: 50, width: 100, height: 50 } }
+        ],
+        gaps: [],
+        canvas: { width: 500, height: 200 }
+      },
+      { focusFrame: 2 }
+    );
+    const rects = svg.querySelectorAll('rect[data-role="frame-outline"]');
+    expect(rects.length).toBe(1);
+    expect(rects[0]!.getAttribute('x')).toBe('150');
+    const badges = svg.querySelectorAll('[data-role="badge"]');
+    expect(badges.length).toBe(1);
+    const badgeText = svg.querySelector('[data-role="badge-text"]');
+    expect(badgeText?.textContent).toBe('2');
+  });
+
+  it('still draws gap lines between non-focused frames (session context)', () => {
+    const svg = buildAnnotationSvg(
+      {
+        frames: [
+          { index: 1, bounds: { x: 0, y: 50, width: 100, height: 50 } },
+          { index: 2, bounds: { x: 150, y: 50, width: 100, height: 50 } }
+        ],
+        gaps: [{ from: 1, to: 2, axis: 'horizontal', px: 50 }],
+        canvas: { width: 400, height: 200 }
+      },
+      { focusFrame: 1 }
+    );
+    // only frame 1 has an outline
+    expect(svg.querySelectorAll('rect[data-role="frame-outline"]').length).toBe(1);
+    // but gap line between 1 and 2 is still drawn
+    expect(svg.querySelectorAll('[data-role="gap-main"]').length).toBe(1);
+  });
+});

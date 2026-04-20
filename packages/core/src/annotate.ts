@@ -29,6 +29,13 @@ export interface AnnotateOptions {
   badges?: boolean;
   sizeLabels?: boolean;
   gaps?: boolean;
+  /**
+   * If set, only the frame whose `index` matches gets outline/badge/sizeLabel
+   * drawn. Other frames contribute nothing visually except their gap lines.
+   * Used by `toAnnotatedPNG` for per-frame renders; live playground overlays
+   * leave this undefined to draw every selection.
+   */
+  focusFrame?: number;
 }
 
 /**
@@ -43,6 +50,7 @@ export function buildAnnotationSvg(
   const showBadges = options.badges !== false;
   const showSizeLabels = options.sizeLabels !== false;
   const showGaps = options.gaps !== false;
+  const focusFrame = options.focusFrame;
 
   const svg = el('svg', {
     width: input.canvas.width,
@@ -51,6 +59,7 @@ export function buildAnnotationSvg(
   }) as SVGSVGElement;
 
   for (const frame of input.frames) {
+    if (focusFrame !== undefined && frame.index !== focusFrame) continue;
     svg.appendChild(outlineRect(frame.bounds));
     if (showSizeLabels) appendSizeLabel(svg, frame.bounds);
     if (showBadges) appendBadge(svg, frame.index, frame.bounds);
