@@ -7,3 +7,6 @@
 *.woff binary
 *.woff2 binary
 *.ttf binary
+*.mp4 binary
+*.webm binary
+*.mov binary

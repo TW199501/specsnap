@@ -9,6 +9,10 @@
 
 ## 實際長這樣
 
+<video src="./docs/superpower/video/specsnap-demo.mp4" controls muted playsinline width="860">
+  你的瀏覽器不支援嵌入影片。<a href="./docs/superpower/video/specsnap-demo.mp4">下載 demo</a>。
+</video>
+
 ![SpecSnap playground — multi-select inspection with numbered badges, inter-element gaps, and per-element box model diagrams](./docs/superpower/image/2026-04-20_02-49.png)
 
 在頁面上點選多個元素，SpecSnap 一次全部擷取：

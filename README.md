@@ -9,6 +9,10 @@
 
 ## See it in action
 
+<video src="./docs/superpower/video/specsnap-demo.mp4" controls muted playsinline width="860">
+  Your browser doesn't support embedded video. <a href="./docs/superpower/video/specsnap-demo.mp4">Download the demo</a>.
+</video>
+
 ![SpecSnap playground — multi-select inspection with numbered badges, inter-element gaps, and per-element box model diagrams](./docs/superpower/image/2026-04-20_02-49.png)
 
 Click multiple elements on a page. SpecSnap captures them all at once with:
