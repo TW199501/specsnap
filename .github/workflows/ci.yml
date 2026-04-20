@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Stop in-progress runs on a branch when a new commit lands.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Gate (check + test + build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Matches the local `pnpm check` — LF enforcement + tsc --noEmit across all workspaces.
+      - name: Check (LF + types)
+        run: pnpm check
+
+      - name: Test (vitest, core)
+        run: pnpm test
+
+      - name: Build (tsup, core)
+        run: pnpm build
+
+      # If the tarball would balloon unexpectedly, catch it before publish.
+      - name: Pack dry-run
+        working-directory: packages/core
+        run: npm pack --dry-run
