@@ -1,9 +1,11 @@
 # SpecSnap
 
-> A zero-loss translator between "human inspects UI visually" and "AI modifies UI precisely"
-> 讓人眼觀察 UI 和 AI 修改 UI 之間翻譯損耗歸零的檢視器
+[English](./README.md) · [繁體中文](./README.zh-TW.md)
+
+> A zero-loss translator between "human inspects UI visually" and "AI modifies UI precisely."
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![npm](https://img.shields.io/npm/v/@tw199501/specsnap-core.svg)](https://www.npmjs.com/package/@tw199501/specsnap-core)
 
 ## See it in action
 
@@ -32,11 +34,17 @@ SpecSnap removes step 2. You click what's wrong. AI reads structured data that c
 
 🚧 **Pre-alpha (v0.0.x)** — schema may change. Locking in at v1.0.
 
+### What v0.0.3 brought
+
+- **`toAnnotatedPNG`** — one annotated PNG per frame, focus-frame isolation
+- **`toSpecSnapBundle`** — disk-ready bundle: MD + PNGs named `YYYYMMDD-NN-*.png` with relative-path refs inside the MD
+- **`filter` option on capture** — exclude consumer UI chrome (panels, toolbars) from the screenshot
+
 ## Packages
 
 | Package | Status | Description |
-|---------|--------|-------------|
-| [`@tw199501/specsnap-core`](./packages/core) | ✅ 0.0.2 | TypeScript library: capture + serialize (MD / JSON) |
+| --- | --- | --- |
+| [`@tw199501/specsnap-core`](./packages/core) | ✅ 0.0.3 | TypeScript library: capture + serialize (MD / JSON) + annotated PNG + disk-ready bundles |
 | `specsnap-extension` | 📋 planned | Chrome / Edge / Firefox extension wrapping core |
 | [`apps/playground`](./apps/playground) | ✅ Vite demo | Multi-select inspector demo (see screenshot above) |
 
@@ -46,6 +54,15 @@ SpecSnap removes step 2. You click what's wrong. AI reads structured data that c
 - [Design decisions (v0 lock-in)](./docs/superpower/plan/2026-04-19-decisions.md) · Q1-Q9 with reasoning
 - [MVP core plan — Part 1](./docs/superpower/plan/2026-04-19-mvp-core-plan-part-1.md) · bootstrap + types
 - [MVP core plan — Part 2](./docs/superpower/plan/2026-04-19-mvp-core-plan-part-2.md) · capture + serializers + ship
+- [Retrospective v0.0.1](./docs/superpower/plan/2026-04-20-retrospective-v001.md)
+- [v0.0.3 core plan](./docs/superpower/plan/2026-04-20-v003-core-annotated-png-plan.md)
+- [v0.0.4 + v0.0.5 closeout plan](./docs/superpower/plan/2026-04-20-v004-v005-closeout-plan.md)
+
+## Requirements
+
+- Node **22+**
+- pnpm **9.15+**
+- TypeScript **6+** (for contributing)
 
 ## License
 

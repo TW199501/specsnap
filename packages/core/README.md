@@ -1,8 +1,11 @@
 # @tw199501/specsnap-core
 
+[English](./README.md) · [繁體中文](./README.zh-TW.md)
+
 > Core capture and serialization library for [SpecSnap](https://github.com/tw199501/specsnap) — the AI-friendly DOM inspector.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![npm](https://img.shields.io/npm/v/@tw199501/specsnap-core.svg)](https://www.npmjs.com/package/@tw199501/specsnap-core)
 
 ## Install
 
