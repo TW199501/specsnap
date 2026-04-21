@@ -60,6 +60,8 @@
             <div><dt>border</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.border) }}</dd></div>
             <div><dt>margin</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.margin) }}</dd></div>
             <div><dt>font</dt><dd>{{ fontLine(snapshot.session.frames[i]!) }}</dd></div>
+            <div><dt>bg</dt><dd>{{ backgroundLine(snapshot.session.frames[i]!) }}</dd></div>
+            <div v-if="gapAfter(i)"><dt>↓ gap</dt><dd>{{ gapAfter(i) }}</dd></div>
           </dl>
         </div>
       </div>
@@ -148,6 +150,22 @@ function rgbToHex(rgb: string): string {
 function fontLine(frame: Frame): string {
   const t = frame.typography;
   return `${t.fontSize}px · ${t.fontWeight} · ${rgbToHex(t.color)}`;
+}
+
+function backgroundLine(frame: Frame): string {
+  const bg = frame.background;
+  const bgColor = rgbToHex(bg.color);
+  const radius = fourSides(bg.borderRadius);
+  const allZero = radius.replace(/[\s\/]/g, '') === '0000';
+  return allZero ? bgColor : `${bgColor} · radius ${radius}`;
+}
+
+function gapAfter(i: number): string | null {
+  const session = props.snapshot.session;
+  if (!session) return null;
+  const gap = session.gaps.find(g => g.from === i + 1 && g.to === i + 2);
+  if (!gap) return null;
+  return `${Math.round(gap.px)}px ${gap.axis}`;
 }
 
 function describeFrame(el: HTMLElement): string {
