@@ -9,28 +9,26 @@
 
 ## See it in action
 
-<video src="./docs/superpower/video/specsnap-demo.mp4" controls muted playsinline width="860">
-  Your browser doesn't support embedded video. <a href="./docs/superpower/video/specsnap-demo.mp4">Download the demo</a>.
-</video>
+ Your browser doesn't support embedded video. [Download the demo](./docs/superpower/video/specsnap-demo.mp4). 
 
 ![SpecSnap playground — multi-select inspection with numbered badges, inter-element gaps, and per-element box model diagrams](./docs/superpower/image/2026-04-20_02-49.png)
 
 Click multiple elements on a page. SpecSnap captures them all at once with:
 
-- **Numbered badges** that link the on-page overlay, the box-model panel, and the exported Markdown — the ① you see in the browser is the same ① in the file
-- **Inter-element gaps** computed automatically (the orange "24px" / "16px" between siblings) — so AI gets spacing info, not just sizes
-- **Per-element box models** — margin / border / padding / content with numeric labels on every side
-- **Viewport context** attached to every capture — "120px wide" is meaningless without knowing it's on a 1440px screen
-- **Bilingual annotations** — English terms for AI precision + 繁體中文 for humans (`padding: 16px (內邊距)`)
+*   **Numbered badges** that link the on-page overlay, the box-model panel, and the exported Markdown — the ① you see in the browser is the same ① in the file
+*   **Inter-element gaps** computed automatically (the orange "24px" / "16px" between siblings) — so AI gets spacing info, not just sizes
+*   **Per-element box models** — margin / border / padding / content with numeric labels on every side
+*   **Viewport context** attached to every capture — "120px wide" is meaningless without knowing it's on a 1440px screen
+*   **Bilingual annotations** — English terms for AI precision + 繁體中文 for humans (`padding: 16px (內邊距)`)
 
 ## Why
 
 Every AI-coding interaction that touches UI hits the same wall:
 
-1. Human eyes see "that button is off"
-2. Human translates observation into text ("the Save button looks 8px too narrow")
-3. AI translates text into code change
-4. Something gets lost in each translation
+1.  Human eyes see "that button is off"
+2.  Human translates observation into text ("the Save button looks 8px too narrow")
+3.  AI translates text into code change
+4.  Something gets lost in each translation
 
 SpecSnap removes step 2. You click what's wrong. AI reads structured data that can't be misread — viewport-qualified coordinates, box-model deltas, inter-element gaps, and the element's own semantic name.
 
@@ -40,27 +38,27 @@ Pre-alpha (v0.0.x) — schema may change. Locking in at v1.0.
 
 ### What v0.0.7 brought
 
-- **Inspector UI packages** — `@tw199501/specsnap-inspector-core` (framework-agnostic), `@tw199501/specsnap-inspector-vue` (Vue 3), `@tw199501/specsnap-inspector-react` (React 18+). Drop-in, zero-config. See [Use the Inspector UI](#use-the-inspector-ui) below.
-- **Storage ladder** — fs-access → ZIP (`fflate`) → individual downloads, all auto-negotiated. `onSave` prop overrides everything.
-- **Release tooling** — `changesets` for coordinated lockstep versioning across the 4 published packages; `dependency-cruiser` CI gate enforcing `inspector-core` stays framework-agnostic.
-- Version 0.0.6 intentionally skipped to signal the "Inspector packages ship" release.
+*   **Inspector UI packages** — `@tw199501/specsnap-inspector-core` (framework-agnostic), `@tw199501/specsnap-inspector-vue` (Vue 3), `@tw199501/specsnap-inspector-react` (React 18+). Drop-in, zero-config. See [Use the Inspector UI](#use-the-inspector-ui) below.
+*   **Storage ladder** — fs-access → ZIP (`fflate`) → individual downloads, all auto-negotiated. `onSave` prop overrides everything.
+*   **Release tooling** — `changesets` for coordinated lockstep versioning across the 4 published packages; `dependency-cruiser` CI gate enforcing `inspector-core` stays framework-agnostic.
+*   Version 0.0.6 intentionally skipped to signal the "Inspector packages ship" release.
 
 ### What v0.0.5 brought
 
-- **`data-i18n-key` / `data-v-source` reverse lookup** — when a build-time tool has injected these attributes, core reads them into `ElementIdentity.i18nKey` and `.source`, and the MD's Basics section emits matching lines. AI can now do i18n key lookups and source-file navigation without grep.
-- **Tag-triggered publish workflow** — `.github/workflows/publish.yml` auto-publishes on `core@*` tag push once `NPM_TOKEN` secret is added.
-- `SCHEMA_VERSION` bumps to `'0.0.5'` (first wire-format change since 0.0.2; all additions are optional fields, no breaks).
+*   `**data-i18n-key**` **/** `**data-v-source**` **reverse lookup** — when a build-time tool has injected these attributes, core reads them into `ElementIdentity.i18nKey` and `.source`, and the MD's Basics section emits matching lines. AI can now do i18n key lookups and source-file navigation without grep.
+*   **Tag-triggered publish workflow** — `.github/workflows/publish.yml` auto-publishes on `core@*` tag push once `NPM_TOKEN` secret is added.
+*   `SCHEMA_VERSION` bumps to `'0.0.5'` (first wire-format change since 0.0.2; all additions are optional fields, no breaks).
 
 ### What v0.0.4 brought
 
-- **File System Access API adapter** in the playground — Copy MD writes into a user-picked folder (Chrome / Edge 86+); older browsers fall back to Downloads/
-- **Border subpixel display polish** — DPR 1.5 screens no longer show `0.67 / 0.67 / 0.67 / 0.67` in MD output; rounds cleanly to `1 / 1 / 1 / 1` while keeping exact precision in JSON
+*   **File System Access API adapter** in the playground — Copy MD writes into a user-picked folder (Chrome / Edge 86+); older browsers fall back to Downloads/
+*   **Border subpixel display polish** — DPR 1.5 screens no longer show `0.67 / 0.67 / 0.67 / 0.67` in MD output; rounds cleanly to `1 / 1 / 1 / 1` while keeping exact precision in JSON
 
 ### What v0.0.3 brought
 
-- **`toAnnotatedPNG`** — one annotated PNG per frame, focus-frame isolation
-- **`toSpecSnapBundle`** — disk-ready bundle: MD + PNGs named `YYYYMMDD-NN-*.png` with relative-path refs inside the MD
-- **`filter` option on capture** — exclude consumer UI chrome (panels, toolbars) from the screenshot
+*   `**toAnnotatedPNG**` — one annotated PNG per frame, focus-frame isolation
+*   `**toSpecSnapBundle**` — disk-ready bundle: MD + PNGs named `YYYYMMDD-NN-*.png` with relative-path refs inside the MD
+*   `**filter**` **option on capture** — exclude consumer UI chrome (panels, toolbars) from the screenshot
 
 ## Packages
 
@@ -77,24 +75,15 @@ Pre-alpha (v0.0.x) — schema may change. Locking in at v1.0.
 
 Zero-config drop-in for Vue 3 or React 18+. Same panel, same on-page overlay, same captured data — whichever framework you use:
 
-<table>
-<tr>
-<td width="50%"><img src="./intro-vue.png" alt="SpecSnap Inspector for Vue 3 — panel with box-model diagrams, numbered overlay badges, and inter-element gap lines" /></td>
-<td width="50%"><img src="./intro-react.png" alt="SpecSnap Inspector for React 18 — identical feature set via drop-in component" /></td>
-</tr>
-<tr>
-<td align="center"><code>@tw199501/specsnap-inspector-vue</code></td>
-<td align="center"><code>@tw199501/specsnap-inspector-react</code></td>
-</tr>
-</table>
+<table><tbody><tr><td><img src="./intro-vue.png" alt="SpecSnap Inspector for Vue 3 — panel with box-model diagrams, numbered overlay badges, and inter-element gap lines"></td><td><img src="./intro-react.png" alt="SpecSnap Inspector for React 18 — identical feature set via drop-in component"></td></tr><tr><td><code>@tw199501/specsnap-inspector-vue</code></td><td><code>@tw199501/specsnap-inspector-react</code></td></tr></tbody></table>
 
 ### Vue 3
 
-```bash
+```
 pnpm add @tw199501/specsnap-inspector-vue
 ```
 
-```vue
+```
 <template>
   <SpecSnapInspector />
 </template>
@@ -107,11 +96,11 @@ import { SpecSnapInspector } from '@tw199501/specsnap-inspector-vue';
 
 ### React 18+
 
-```bash
+```
 pnpm add @tw199501/specsnap-inspector-react
 ```
 
-```tsx
+```
 import '@tw199501/specsnap-inspector-react/styles.css';
 import { SpecSnapInspector } from '@tw199501/specsnap-inspector-react';
 
@@ -126,19 +115,19 @@ Framework-less consumers can use [`@tw199501/specsnap-inspector-core`](./package
 
 ## Design Docs
 
-- [Creative vision](./docs/superpower/plan/2026-04-19-vision.md) · what we're building, why, the 7 north-star principles
-- [Design decisions (v0 lock-in)](./docs/superpower/plan/2026-04-19-decisions.md) · Q1-Q9 with reasoning
-- [MVP core plan — Part 1](./docs/superpower/plan/2026-04-19-mvp-core-plan-part-1.md) · bootstrap + types
-- [MVP core plan — Part 2](./docs/superpower/plan/2026-04-19-mvp-core-plan-part-2.md) · capture + serializers + ship
-- [Retrospective v0.0.1](./docs/superpower/plan/2026-04-20-retrospective-v001.md)
-- [v0.0.3 core plan](./docs/superpower/plan/2026-04-20-v003-core-annotated-png-plan.md)
-- [v0.0.4 + v0.0.5 closeout plan](./docs/superpower/plan/2026-04-20-v004-v005-closeout-plan.md)
+*   [Creative vision](./docs/superpower/plan/2026-04-19-vision.md) · what we're building, why, the 7 north-star principles
+*   [Design decisions (v0 lock-in)](./docs/superpower/plan/2026-04-19-decisions.md) · Q1-Q9 with reasoning
+*   [MVP core plan — Part 1](./docs/superpower/plan/2026-04-19-mvp-core-plan-part-1.md) · bootstrap + types
+*   [MVP core plan — Part 2](./docs/superpower/plan/2026-04-19-mvp-core-plan-part-2.md) · capture + serializers + ship
+*   [Retrospective v0.0.1](./docs/superpower/plan/2026-04-20-retrospective-v001.md)
+*   [v0.0.3 core plan](./docs/superpower/plan/2026-04-20-v003-core-annotated-png-plan.md)
+*   [v0.0.4 + v0.0.5 closeout plan](./docs/superpower/plan/2026-04-20-v004-v005-closeout-plan.md)
 
 ## Requirements
 
-- Node **22+**
-- pnpm **9.15+**
-- TypeScript **6+** (for contributing)
+*   Node **22+**
+*   pnpm **9.15+**
+*   TypeScript **6+** (for contributing)
 
 ## Development
 
@@ -146,7 +135,7 @@ Clone, install once, then use the following commands from the repo root.
 
 ### Daily dev loop
 
-```bash
+```
 # Install workspace dependencies (first time, or after lockfile changes)
 pnpm install
 
@@ -158,7 +147,7 @@ pnpm -F specsnap-playground dev
 
 ### Tests
 
-```bash
+```
 # Run every workspace's test suite (core + playground)
 pnpm test
 
@@ -177,7 +166,7 @@ pnpm -F @tw199501/specsnap-core test:coverage
 
 ### Check (LF + types)
 
-```bash
+```
 # Mirrors the release gate: LF enforcement across all tracked files,
 # then tsc --noEmit in every workspace
 pnpm check
@@ -185,7 +174,7 @@ pnpm check
 
 ### Build
 
-```bash
+```
 # Builds packages/core's dist (tsup — ESM + CJS + d.ts)
 pnpm -F @tw199501/specsnap-core build
 
@@ -197,7 +186,7 @@ cd ../..
 
 ### Release ritual
 
-```bash
+```
 # 1) Bump the version in packages/core/package.json
 # 2) Update READMEs + any version-sensitive tests
 # 3) Full gate — all green before tagging
@@ -223,7 +212,7 @@ the tag is pushed.
 
 ### One-liner: ci gate
 
-```bash
+```
 # Everything the GitHub Actions CI runs, locally
 pnpm check && pnpm test && pnpm build
 ```
