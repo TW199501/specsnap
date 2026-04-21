@@ -1,0 +1,51 @@
+{
+  "name": "@tw199501/specsnap-inspector-vue",
+  "version": "0.0.7",
+  "description": "Vue 3 drop-in SpecSnap Inspector UI",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": ["dist", "README.md"],
+  "sideEffects": ["**/*.css"],
+  "scripts": {
+    "build": "tsup && vue-tsc --emitDeclarationOnly --declaration --outDir dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "vue-tsc --noEmit",
+    "dev": "tsup --watch"
+  },
+  "peerDependencies": {
+    "@tw199501/specsnap-inspector-core": "workspace:^",
+    "vue": ">=3.3"
+  },
+  "devDependencies": {
+    "@tw199501/specsnap-inspector-core": "workspace:*",
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/test-utils": "^2.4.6",
+    "esbuild-plugin-vue3": "^0.4.2",
+    "happy-dom": "^20.9.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.4",
+    "vue": "^3.5.0",
+    "vue-tsc": "^2.2.0"
+  },
+  "publishConfig": { "access": "public" },
+  "author": "tw199501",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tw199501/specsnap.git",
+    "directory": "packages/inspector-vue"
+  }
+}
