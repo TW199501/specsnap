@@ -44,8 +44,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Full gate (check + test + build)
-        run: pnpm check && pnpm test && pnpm build
+      - name: Full gate (build + check + test)
+        # Order matters: build FIRST so packages/core/dist/*.d.ts exists
+        # before packages/inspector-core's tsc tries to resolve the core
+        # workspace import. Check-before-build was the bug in the initial
+        # v0.0.8 CI run — hit TS2307 "Cannot find module '@tw199501/specsnap-core'"
+        # across 6 files in inspector-core. Same gotcha applies to local
+        # `pnpm check` — always run `pnpm build` first on a fresh clone.
+        run: pnpm build && pnpm check && pnpm test
 
       - name: Verify tag matches workspace version
         run: |
