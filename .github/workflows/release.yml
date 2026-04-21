@@ -66,6 +66,17 @@ jobs:
           done
           echo "All 4 packages at $TAG_VERSION — OK"
 
+      - name: Write .npmrc with auth token
+        # setup-node's registry-url + NODE_AUTH_TOKEN writes $HOME/.npmrc,
+        # but `changeset publish` spawns a child pnpm that sometimes doesn't
+        # inherit it. Writing a repo-root .npmrc makes the auth unambiguous
+        # for every subprocess.
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish via changesets
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
