@@ -79,6 +79,7 @@ export const SpecSnapInspector = forwardRef<SpecSnapInspectorHandle, SpecSnapIns
     }), [handle]);
 
     const onCopy = useCallback(async () => {
+      handle.stopPicker();
       await handle.copyMarkdown();
       await handle.saveBundle();
     }, [handle]);

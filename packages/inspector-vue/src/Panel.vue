@@ -46,8 +46,22 @@
         :key="i"
         class="specsnap-inspector-frame"
       >
-        <span class="specsnap-inspector-frame__index">{{ i + 1 }}</span>
-        <span>{{ describeFrame(frame) }}</span>
+        <header class="specsnap-inspector-frame__row">
+          <span class="specsnap-inspector-frame__index">{{ i + 1 }}</span>
+          <span>{{ describeFrame(frame) }}</span>
+        </header>
+        <div v-if="snapshot.session && snapshot.session.frames[i]" class="specsnap-inspector-frame__detail">
+          <div class="specsnap-inspector-frame__boxmodel">
+            <BoxModelDiagram :frame="snapshot.session.frames[i]!" />
+          </div>
+          <dl class="specsnap-inspector-frame__meta">
+            <div><dt>size</dt><dd>{{ frameSize(snapshot.session.frames[i]!) }}</dd></div>
+            <div><dt>padding</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.padding) }}</dd></div>
+            <div><dt>border</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.border) }}</dd></div>
+            <div><dt>margin</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.margin) }}</dd></div>
+            <div><dt>font</dt><dd>{{ snapshot.session.frames[i]!.typography.fontSize }}px · {{ snapshot.session.frames[i]!.typography.color }}</dd></div>
+          </dl>
+        </div>
       </div>
     </div>
 
@@ -66,7 +80,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { InspectorSnapshot, PanelPosition } from '@tw199501/specsnap-inspector-core';
+import BoxModelDiagram from './BoxModelDiagram.vue';
+import type { InspectorSnapshot, PanelPosition, Session } from '@tw199501/specsnap-inspector-core';
+type Frame = Session['frames'][number];
 
 const props = defineProps<{
   snapshot: InspectorSnapshot;
@@ -106,6 +122,14 @@ const statusKind = computed(() => {
   if (!s) return 'info';
   return s.error ? 'error' : 'success';
 });
+
+function frameSize(frame: Frame): string {
+  return `${Math.round(frame.rect.width)} × ${Math.round(frame.rect.height)} px`;
+}
+
+function fourSides(sides: readonly [number, number, number, number]): string {
+  return sides.map(n => Math.round(n)).join(' / ');
+}
 
 function describeFrame(el: HTMLElement): string {
   const tag = el.tagName.toLowerCase();

@@ -85,6 +85,10 @@ function togglePicker(): void {
 }
 
 async function onCopyClick(): Promise<void> {
+  // Stop picker before save — fs-access can fall back to `<a download>`
+  // clicks which, while picker is active, would otherwise be captured as
+  // stray frames during the save flow.
+  handle.stopPicker();
   await handle.copyMarkdown();
   await handle.saveBundle();
 }

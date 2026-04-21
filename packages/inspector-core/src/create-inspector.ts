@@ -66,7 +66,15 @@ export function createInspector(options: InspectorOptions = {}): InspectorHandle
     overlay.update(store.getSnapshot().frames);
   });
 
-  const excludeSelectors = ['.specsnap-inspector-panel', '.specsnap-inspector-trigger', '#specsnap-inspector-overlay'];
+  const excludeSelectors = [
+    '.specsnap-inspector-panel',
+    '.specsnap-inspector-trigger',
+    '#specsnap-inspector-overlay',
+    // Internal download anchors (created transiently by the storage layer
+    // to trigger file downloads). These click() calls bubble to document
+    // and were being captured as picks — ate-our-own-tail bug.
+    'a[download]'
+  ];
 
   const picker = createPicker({
     scope: options.scope ?? null,
