@@ -1,0 +1,53 @@
+{
+  "name": "@tw199501/specsnap-inspector-react",
+  "version": "0.0.7",
+  "description": "React 18 drop-in SpecSnap Inspector UI",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": ["dist", "README.md"],
+  "sideEffects": ["**/*.css"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "tsc --noEmit",
+    "dev": "tsup --watch"
+  },
+  "peerDependencies": {
+    "@tw199501/specsnap-inspector-core": "workspace:^",
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@tw199501/specsnap-inspector-core": "workspace:*",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "happy-dom": "^20.9.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.4"
+  },
+  "publishConfig": { "access": "public" },
+  "author": "tw199501",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tw199501/specsnap.git",
+    "directory": "packages/inspector-react"
+  }
+}

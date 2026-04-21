@@ -1,0 +1,183 @@
+/*
+ * SpecSnap Inspector styling — Vue wrapper.
+ * All custom properties namespaced with --specsnap-. Override in your app's
+ * global CSS to theme the inspector.
+ */
+.specsnap-inspector-root,
+.specsnap-inspector-panel,
+.specsnap-inspector-trigger {
+  --specsnap-panel-bg: #ffffff;
+  --specsnap-panel-border: #e2e8f0;
+  --specsnap-panel-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+  --specsnap-text-primary: #0f172a;
+  --specsnap-text-muted: #64748b;
+  --specsnap-accent: #2563eb;
+  --specsnap-accent-contrast: #ffffff;
+  --specsnap-danger: #ef4444;
+  --specsnap-success: #10b981;
+  --specsnap-panel-width: 420px;
+  --specsnap-panel-height: 540px;
+  --specsnap-trigger-size: 44px;
+  --specsnap-z-index: 2147483000;
+  --specsnap-radius: 12px;
+  --specsnap-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.specsnap-inspector-trigger {
+  position: fixed;
+  width: var(--specsnap-trigger-size);
+  height: var(--specsnap-trigger-size);
+  border-radius: 50%;
+  background: var(--specsnap-accent);
+  color: var(--specsnap-accent-contrast);
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--specsnap-panel-shadow);
+  z-index: var(--specsnap-z-index);
+  display: grid;
+  place-items: center;
+  font-family: var(--specsnap-font);
+  font-size: 18px;
+  transition: transform 0.15s ease;
+}
+.specsnap-inspector-trigger:hover { transform: scale(1.08); }
+
+.specsnap-inspector-trigger[data-position="top-left"]     { top: 12px;    left: 12px; }
+.specsnap-inspector-trigger[data-position="top-right"]    { top: 12px;    right: 12px; }
+.specsnap-inspector-trigger[data-position="bottom-left"]  { bottom: 12px; left: 12px; }
+.specsnap-inspector-trigger[data-position="bottom-right"] { bottom: 12px; right: 12px; }
+
+.specsnap-inspector-panel {
+  position: fixed;
+  width: var(--specsnap-panel-width);
+  height: var(--specsnap-panel-height);
+  background: var(--specsnap-panel-bg);
+  color: var(--specsnap-text-primary);
+  border: 1px solid var(--specsnap-panel-border);
+  border-radius: var(--specsnap-radius);
+  box-shadow: var(--specsnap-panel-shadow);
+  z-index: var(--specsnap-z-index);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--specsnap-font);
+  font-size: 14px;
+}
+.specsnap-inspector-panel[data-position="top-left"]     { top: 12px;    left: 12px; }
+.specsnap-inspector-panel[data-position="top-right"]    { top: 12px;    right: 12px; }
+.specsnap-inspector-panel[data-position="bottom-left"]  { bottom: 12px; left: 12px; }
+.specsnap-inspector-panel[data-position="bottom-right"] { bottom: 12px; right: 12px; }
+
+.specsnap-inspector-panel__header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--specsnap-panel-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.specsnap-inspector-panel__title { font-weight: 600; }
+.specsnap-inspector-panel__hint {
+  color: var(--specsnap-text-muted);
+  font-size: 12px;
+  margin-left: auto;
+}
+.specsnap-inspector-panel__close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--specsnap-text-muted);
+}
+
+.specsnap-inspector-panel__actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+}
+.specsnap-inspector-panel__actions button {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--specsnap-panel-border);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  background: var(--specsnap-panel-bg);
+  color: var(--specsnap-text-primary);
+}
+.specsnap-inspector-panel__actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.specsnap-inspector-panel__actions .specsnap-btn-primary {
+  background: var(--specsnap-accent);
+  color: var(--specsnap-accent-contrast);
+  border-color: var(--specsnap-accent);
+}
+.specsnap-inspector-panel__actions .specsnap-btn-primary.active {
+  filter: brightness(0.9);
+}
+
+.specsnap-inspector-panel__frames {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px 12px;
+}
+.specsnap-inspector-frame {
+  padding: 8px 12px;
+  border: 1px solid var(--specsnap-panel-border);
+  border-radius: 8px;
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+.specsnap-inspector-frame__index {
+  background: var(--specsnap-accent);
+  color: var(--specsnap-accent-contrast);
+  min-width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 11px;
+}
+.specsnap-inspector-empty {
+  text-align: center;
+  color: var(--specsnap-text-muted);
+  padding: 32px 16px;
+  font-size: 13px;
+}
+
+.specsnap-inspector-panel__status {
+  padding: 8px 16px;
+  border-top: 1px solid var(--specsnap-panel-border);
+  font-size: 12px;
+  color: var(--specsnap-text-muted);
+  min-height: 32px;
+}
+.specsnap-inspector-panel__status[data-kind="error"] { color: var(--specsnap-danger); }
+.specsnap-inspector-panel__status[data-kind="success"] { color: var(--specsnap-success); }
+
+.specsnap-inspector-panel__json {
+  border-top: 1px solid var(--specsnap-panel-border);
+  padding: 8px 16px;
+}
+.specsnap-inspector-panel__json summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--specsnap-text-muted);
+}
+.specsnap-inspector-panel__json pre {
+  max-height: 160px;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  margin: 8px 0 0;
+}
+
+body.specsnap-inspecting,
+body.specsnap-inspecting * {
+  cursor: crosshair !important;
+}
