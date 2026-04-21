@@ -66,14 +66,19 @@ jobs:
           done
           echo "All 4 packages at $TAG_VERSION — OK"
 
-      - name: Write .npmrc with auth token
-        # setup-node's registry-url + NODE_AUTH_TOKEN writes $HOME/.npmrc,
-        # but `changeset publish` spawns a child pnpm that sometimes doesn't
-        # inherit it. Writing a repo-root .npmrc makes the auth unambiguous
-        # for every subprocess.
+      - name: Write $HOME/.npmrc with literal auth token
+        # Standard pnpm + changesets + GitHub Actions recipe.
+        # setup-node@v4's registry-url+NODE_AUTH_TOKEN produces an $HOME/.npmrc
+        # with a placeholder `${NODE_AUTH_TOKEN}` that npm expands at publish
+        # time — but changeset publish's subprocess chain doesn't always
+        # propagate the env var, resulting in ENEEDAUTH.
+        # Writing a literal token directly to $HOME/.npmrc removes the env-var
+        # hop, matching the pattern documented in changesets' own GitHub
+        # Actions examples.
         run: |
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
-          echo "registry=https://registry.npmjs.org/" >> .npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > $HOME/.npmrc
+          echo "registry=https://registry.npmjs.org/" >> $HOME/.npmrc
+          echo "always-auth=true" >> $HOME/.npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
