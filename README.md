@@ -1,4 +1,4 @@
-# SpecSnap
+尙 SpecSnap
 
 [English](./README.md) · [繁體中文](./README.zh-TW.md)
 
@@ -78,10 +78,6 @@ Zero-config drop-in for Vue 3 or React 18+. Same panel, same on-page overlay, sa
 <table><tbody><tr><td><img src="./intro-vue.png" alt="SpecSnap Inspector for Vue 3 — panel with box-model diagrams, numbered overlay badges, and inter-element gap lines"></td><td><img src="./intro-react.png" alt="SpecSnap Inspector for React 18 — identical feature set via drop-in component"></td></tr><tr><td><code>@tw199501/specsnap-inspector-vue</code></td><td><code>@tw199501/specsnap-inspector-react</code></td></tr></tbody></table>
 
 ### Vue 3
-
-```
-pnpm add @tw199501/specsnap-inspector-vue
-```
 
 ```
 <template>
