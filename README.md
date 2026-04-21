@@ -38,6 +38,13 @@ SpecSnap removes step 2. You click what's wrong. AI reads structured data that c
 
 Pre-alpha (v0.0.x) — schema may change. Locking in at v1.0.
 
+### What v0.0.7 brought
+
+- **Inspector UI packages** — `@tw199501/specsnap-inspector-core` (framework-agnostic), `@tw199501/specsnap-inspector-vue` (Vue 3), `@tw199501/specsnap-inspector-react` (React 18+). Drop-in, zero-config. See [Use the Inspector UI](#use-the-inspector-ui) below.
+- **Storage ladder** — fs-access → ZIP (`fflate`) → individual downloads, all auto-negotiated. `onSave` prop overrides everything.
+- **Release tooling** — `changesets` for coordinated lockstep versioning across the 4 published packages; `dependency-cruiser` CI gate enforcing `inspector-core` stays framework-agnostic.
+- Version 0.0.6 intentionally skipped to signal the "Inspector packages ship" release.
+
 ### What v0.0.5 brought
 
 - **`data-i18n-key` / `data-v-source` reverse lookup** — when a build-time tool has injected these attributes, core reads them into `ElementIdentity.i18nKey` and `.source`, and the MD's Basics section emits matching lines. AI can now do i18n key lookups and source-file navigation without grep.
@@ -59,9 +66,52 @@ Pre-alpha (v0.0.x) — schema may change. Locking in at v1.0.
 
 | Package | Status | Description |
 | --- | --- | --- |
-| [`@tw199501/specsnap-core`](./packages/core) | 0.0.5 | TypeScript library: capture + serialize (MD / JSON) + annotated PNG + disk-ready bundles + optional i18nKey / source |
+| [`@tw199501/specsnap-core`](./packages/core) | 0.0.7 | TypeScript library: capture + serialize (MD / JSON) + annotated PNG + disk-ready bundles + optional i18nKey / source |
+| [`@tw199501/specsnap-inspector-core`](./packages/inspector-core) | 0.0.7 | Framework-agnostic headless Inspector (element picker, pub-sub store, sequence counter, storage ladder) |
+| [`@tw199501/specsnap-inspector-vue`](./packages/inspector-vue) | 0.0.7 | Drop-in Vue 3 component — `<SpecSnapInspector />` |
+| [`@tw199501/specsnap-inspector-react`](./packages/inspector-react) | 0.0.7 | Drop-in React 18+ component — `<SpecSnapInspector />` |
 | `specsnap-extension` | planned | Chrome / Edge / Firefox extension wrapping core |
 | [`apps/playground`](./apps/playground) | Vite demo | Multi-select inspector demo (see screenshot above) |
+
+## Use the Inspector UI
+
+Zero-config drop-in for Vue 3 or React 18+.
+
+### Vue 3
+
+```bash
+pnpm add @tw199501/specsnap-inspector-vue
+```
+
+```vue
+<template>
+  <SpecSnapInspector />
+</template>
+
+<script setup lang="ts">
+import '@tw199501/specsnap-inspector-vue/styles.css';
+import { SpecSnapInspector } from '@tw199501/specsnap-inspector-vue';
+</script>
+```
+
+### React 18+
+
+```bash
+pnpm add @tw199501/specsnap-inspector-react
+```
+
+```tsx
+import '@tw199501/specsnap-inspector-react/styles.css';
+import { SpecSnapInspector } from '@tw199501/specsnap-inspector-react';
+
+export default function App() {
+  return <><YourApp /><SpecSnapInspector /></>;
+}
+```
+
+A floating trigger appears bottom-right; click to open the Inspector panel; pick elements; Copy MD sends Markdown to clipboard and saves `specsnap/YYYYMMDD/` to disk (Chromium) or downloads a ZIP (everything else).
+
+Framework-less consumers can use [`@tw199501/specsnap-inspector-core`](./packages/inspector-core) directly.
 
 ## Design Docs
 

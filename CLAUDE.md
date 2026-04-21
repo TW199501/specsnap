@@ -12,7 +12,10 @@ The vision, decisions, and per-version plans live in [docs/superpower/plan/](doc
 
 pnpm workspace (`pnpm-workspace.yaml` → `packages/*`, `apps/*`):
 
-- [packages/core](packages/core) — `@tw199501/specsnap-core`, the only published package. Ships `.mjs` + `.cjs` + `.d.ts` via tsup. One runtime dep: `dom-to-image-more` (used only by the PNG path, **dynamically imported** inside [to-annotated-png.ts](packages/core/src/to-annotated-png.ts) so `toMarkdown`/`toJSON`-only consumers don't pay for it — don't convert it to a static import).
+- [packages/core](packages/core) — `@tw199501/specsnap-core`. Ships `.mjs` + `.cjs` + `.d.ts` via tsup. One runtime dep: `dom-to-image-more` (used only by the PNG path, **dynamically imported** inside [to-annotated-png.ts](packages/core/src/to-annotated-png.ts) so `toMarkdown`/`toJSON`-only consumers don't pay for it — don't convert it to a static import).
+- [packages/inspector-core](packages/inspector-core) — `@tw199501/specsnap-inspector-core`. Framework-agnostic headless Inspector: element picker, pub-sub store (`subscribe`/`getSnapshot`), sequence counter, clipboard, storage ladder (fs-access → ZIP → individual). `dependency-cruiser` enforces **no `vue`/`react`/`react-dom` imports** under `packages/inspector-core/src`.
+- [packages/inspector-vue](packages/inspector-vue) — `@tw199501/specsnap-inspector-vue`. Thin Vue 3 wrapper: `<SpecSnapInspector />` SFC + `useInspector` composable bridging core's store via `shallowRef`. Uses `<Teleport>` to mount the panel on `document.body` to escape parent stacking contexts. Builds with `tsup` (esbuild-plugin-vue3) + `vue-tsc` for `.d.ts`.
+- [packages/inspector-react](packages/inspector-react) — `@tw199501/specsnap-inspector-react`. Thin React 18+ wrapper: `<SpecSnapInspector />` with `forwardRef`, `useInspector` hook via `useSyncExternalStore`. Uses `createPortal` for the panel.
 - [apps/playground](apps/playground) — Vite demo that imports core via `workspace:*`. Not published. Doubles as the primary visual regression check for capture/serialize changes. Has its own vitest config and Playground-local tests (e.g. [fs-access.test.ts](apps/playground/fs-access.test.ts)) covering File System Access API integration used by the bundle-save feature.
 - [docs/superpower/plan/](docs/superpower/plan/) — dated brainstorm → decisions → plan → retrospective docs. Treat these as the source of truth for scope decisions.
 
@@ -24,7 +27,7 @@ Run from repo root unless noted. Requires Node ≥ 20 and pnpm (pinned to 9.15.0
 pnpm install                    # bootstrap workspace
 pnpm build                      # -r build: tsup builds packages/core
 pnpm test                       # -r test: runs vitest in packages/core
-pnpm check                      # LF check + -r tsc --noEmit (the CI gate)
+pnpm check                      # LF check + depcruise + -r tsc --noEmit (the CI gate)
 pnpm check:eol                  # LF-only guard (see Line endings below)
 ```
 
@@ -120,13 +123,41 @@ LF is mandatory everywhere. If any layer is removed, Windows editors silently re
 
 Rationale and the history of how this was chosen is in [docs/superpower/plan/2026-04-19-decisions.md](docs/superpower/plan/2026-04-19-decisions.md) (Q9). **Never edit files from PowerShell/Notepad on Windows** — they save CRLF by default.
 
+## Package boundaries — enforced in CI
+
+[.dependency-cruiser.cjs](.dependency-cruiser.cjs) has 4 forbidden rules that run as part of `pnpm check`:
+
+1. `inspector-core-no-framework` — `packages/inspector-core/src/**` MUST NOT import `vue`, `react`, or `react-dom`. Keeps core truly framework-agnostic.
+2. `inspector-core-no-css` — `packages/inspector-core/src/**` MUST NOT import any `.css` file. Styling belongs to wrappers.
+3. `specsnap-core-no-inspector` — `packages/core/src/**` MUST NOT import from `packages/inspector-*`. Dependency direction is one-way (`inspector-* → core`, never reverse).
+4. `no-circular` — no circular dependencies anywhere.
+
+If you hit a rule, either the code belongs in a wrapper (`inspector-vue`/`inspector-react`) or the rule needs to be weakened with justification — never silently suppress.
+
+## Release workflow (v0.0.7+)
+
+[`changesets`](https://github.com/changesets/changesets) is installed; `.changeset/config.json` has the four published packages in a `fixed` group so they all bump in lockstep:
+
+```bash
+pnpm changeset                  # interactive: author a changeset entry for pending work
+pnpm version-packages           # consume changeset entries → bump package.json versions + generate CHANGELOGs
+pnpm release                    # `pnpm -r build` then `changeset publish` to npm
+```
+
+0.0.6 was intentionally skipped when shipping 0.0.7 (inspector packages debut). See [docs/superpower/plan/2026-04-20-v007-inspector-packages-design.md](docs/superpower/plan/2026-04-20-v007-inspector-packages-design.md) for the design decisions.
+
 ## Conventions
 
 - **Semantic versioning**: the npm package version and `SCHEMA_VERSION` track separately. Breaking the schema → bump `SCHEMA_VERSION` in [types.ts](packages/core/src/types.ts) **and** regenerate any test expectations asserting it (grep for the literal version string).
 - **Bilingual annotations are a schema feature, not an afterthought.** The Markdown output interleaves English CSS terms with Traditional-Chinese labels (`padding: 16px (內邊距)`). Principle P3 — don't strip them, don't remove lexicon entries without updating `toMarkdown` and its tests.
 - **P7 — observe, not modify.** The **capture + serialize** path (`captureElement`, `captureSession`, `toMarkdown`, `toJSON`) must never mutate the host page. No writes to `el.style`, no event listeners attached on the page's behalf, no DOM injection. The **PNG renderer** ([to-annotated-png.ts](packages/core/src/to-annotated-png.ts)) is a deliberate, scoped exception: it transiently mounts the annotation `<svg>` onto `document.body` for the duration of one `dom-to-image-more.toBlob(...)` call, then removes it in `finally`. Preserve both properties: keep capture/serialize pure, and keep PNG cleanup synchronous and unconditional.
 - **Numbered badges must stay stable across overlay / Markdown / JSON / PNG.** The `index` on a `Frame` (1-based) is what ties on-page overlay, box-model panel, exported Markdown, JSON, and the `-${frameIndex}.png` filename suffix together. Don't silently renumber during serialization or bundling.
-- **The Inspector panel is the UI we ship.** Core is a headless library — the reference UI (floating panel: *Start Inspect / Clear / Copy MD*, frame list, Raw JSON drawer) lives in [apps/playground/main.ts](apps/playground/main.ts) and is mirrored in the downstream `antares2/TheSpecSnapInspector.vue`. When someone says "SpecSnap doesn't have a UI", point them at the playground page — that floating panel IS the UI. If that UI needs to evolve, keep the playground version and the Vue version in lock-step (same buttons, same empty-state copy, same "next capture id" hint).
+- **Inspector packages are the UI we ship (as of v0.0.7).** Core is a headless library — the Inspector UI is published as three npm packages:
+  - [`@tw199501/specsnap-inspector-core`](packages/inspector-core) — framework-agnostic factory + store + element picker. Enforced by [.dependency-cruiser.cjs](.dependency-cruiser.cjs) to have zero framework imports.
+  - [`@tw199501/specsnap-inspector-vue`](packages/inspector-vue) — Vue 3 drop-in. Uses `<Teleport>` + `shallowRef` subscription.
+  - [`@tw199501/specsnap-inspector-react`](packages/inspector-react) — React 18+ drop-in. Uses `createPortal` + `useSyncExternalStore`.
+
+  When someone says "SpecSnap doesn't have a UI", point them at `npm i @tw199501/specsnap-inspector-vue` (or `-react`). The [apps/playground/main.ts](apps/playground/main.ts) hand-rolled inspector still exists as the historical reference; a follow-up (deferred to v0.0.8+) will migrate it to import inspector-core instead of maintaining two sources of truth.
 
 ## License & authorship
 
