@@ -95,6 +95,47 @@ describe('createPicker', () => {
     picker.stop();
   });
 
+  it('excluded clicks propagate to their own handlers (panel buttons stay interactive)', () => {
+    const panel = document.createElement('div');
+    panel.className = 'specsnap-inspector-panel';
+    const btn = document.createElement('button');
+    const ownHandler = vi.fn();
+    btn.addEventListener('click', ownHandler);
+    panel.appendChild(btn);
+    document.body.appendChild(panel);
+
+    const onPick = vi.fn();
+    const picker = createPicker({ onPick, excludeSelectors: ['.specsnap-inspector-panel'] });
+    picker.start();
+
+    btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+
+    // Picker ignores exclude; the button's own click handler still fires.
+    expect(onPick).not.toHaveBeenCalled();
+    expect(ownHandler).toHaveBeenCalledOnce();
+    picker.stop();
+  });
+
+  it('out-of-scope clicks propagate normally (links outside scope still work)', () => {
+    const root = document.createElement('div');
+    const outsideLink = document.createElement('a');
+    outsideLink.href = '#';
+    const ownHandler = vi.fn();
+    outsideLink.addEventListener('click', ownHandler);
+    document.body.appendChild(root);
+    document.body.appendChild(outsideLink);
+
+    const onPick = vi.fn();
+    const picker = createPicker({ onPick, scope: () => root });
+    picker.start();
+
+    outsideLink.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+
+    expect(onPick).not.toHaveBeenCalled();
+    expect(ownHandler).toHaveBeenCalledOnce();
+    picker.stop();
+  });
+
   it('ESC keydown fires onCancel', () => {
     const onCancel = vi.fn();
     const picker = createPicker({ onPick: vi.fn(), onCancel });

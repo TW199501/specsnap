@@ -7,6 +7,7 @@ import { saveBundleToFsAccess, type BundleToWrite } from './storage/fs-access.js
 import { saveBundleAsZip } from './storage/zip-fallback.js';
 import { saveBundleAsIndividualFiles } from './storage/individual-fallback.js';
 import { saveBundleWithLadder } from './storage/save-bundle.js';
+import { createOverlay } from './overlay.js';
 import type {
   InspectorOptions,
   InspectorHandle,
@@ -58,7 +59,14 @@ export function createInspector(options: InspectorOptions = {}): InspectorHandle
 
   const store = createStore({ nextCaptureId: computeNextId() });
 
-  const excludeSelectors = ['.specsnap-inspector-panel', '.specsnap-inspector-trigger'];
+  // On-page visual overlay: numbered badges + outlines on picked frames,
+  // gap distance markers between them. Subscribes to store; cleaned up in destroy().
+  const overlay = createOverlay();
+  const unsubscribeOverlay = store.subscribe(() => {
+    overlay.update(store.getSnapshot().frames);
+  });
+
+  const excludeSelectors = ['.specsnap-inspector-panel', '.specsnap-inspector-trigger', '#specsnap-inspector-overlay'];
 
   const picker = createPicker({
     scope: options.scope ?? null,
@@ -172,6 +180,8 @@ export function createInspector(options: InspectorOptions = {}): InspectorHandle
 
   function destroy(): void {
     if (picker.isActive()) picker.stop();
+    unsubscribeOverlay();
+    overlay.destroy();
   }
 
   return {

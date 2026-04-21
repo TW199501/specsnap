@@ -33,20 +33,21 @@ export function createPicker(opts: PickerOptions): Picker {
     if (!active) return;
     if (!(e.target instanceof HTMLElement)) return;
 
+    // Excluded elements (panel, trigger, host-provided) must keep their own
+    // click handlers working — DON'T swallow. User needs Start Inspect / Clear
+    // / Done buttons to remain interactive during picker mode.
     const exclude = opts.excludeSelectors ?? [];
-    if (exclude.length > 0 && matchesAny(e.target, exclude)) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
+    if (exclude.length > 0 && matchesAny(e.target, exclude)) return;
 
+    // Out-of-scope clicks proceed normally — picker simply doesn't capture
+    // them. This keeps navigation / links / form inputs outside the scope
+    // working even while picker is on.
     const scopeEl = resolveScope(opts.scope);
-    if (!scopeEl.contains(e.target)) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
+    if (!scopeEl.contains(e.target)) return;
 
+    // In-scope successful pick: swallow the native click so the picked
+    // element's own click handler (e.g. <a href> navigation, <button>
+    // form submit) doesn't fire while the user is inspecting.
     e.preventDefault();
     e.stopPropagation();
     opts.onPick(e.target);
