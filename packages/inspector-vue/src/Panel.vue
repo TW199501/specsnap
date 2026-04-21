@@ -33,8 +33,9 @@
       <button
         type="button"
         @click="$emit('copy')"
-        :disabled="snapshot.frames.length === 0"
-      >Copy MD</button>
+        :disabled="snapshot.frames.length === 0 || copyFeedback === 'copying'"
+        :class="{ 'is-feedback-ok': copyFeedback === 'copied', 'is-feedback-err': copyFeedback === 'error' }"
+      >{{ copyBtnLabel }}</button>
     </div>
 
     <div class="specsnap-inspector-panel__frames">
@@ -89,11 +90,23 @@ import BoxModelDiagram from './BoxModelDiagram.vue';
 import type { InspectorSnapshot, PanelPosition, Session } from '@tw199501/specsnap-inspector-core';
 type Frame = Session['frames'][number];
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   snapshot: InspectorSnapshot;
   position: PanelPosition;
   title: string;
-}>();
+  copyFeedback?: 'idle' | 'copying' | 'copied' | 'error';
+}>(), {
+  copyFeedback: 'idle'
+});
+
+const copyBtnLabel = computed(() => {
+  switch (props.copyFeedback) {
+    case 'copying': return 'Copying…';
+    case 'copied': return 'Copied ✓';
+    case 'error': return 'Error ✗';
+    default: return 'Copy MD';
+  }
+});
 
 defineEmits<{
   close: [];

@@ -15,12 +15,13 @@
       @toggle-picker="togglePicker"
       @clear="handle.clearFrames()"
       @copy="onCopyClick"
+      :copy-feedback="copyFeedback"
     />
   </Teleport>
 </template>
 
 <script setup lang="ts">
-import { watch, computed } from 'vue';
+import { watch, computed, ref } from 'vue';
 import TriggerButton from './TriggerButton.vue';
 import Panel from './Panel.vue';
 import { useInspector } from './use-inspector.js';
@@ -84,12 +85,22 @@ function togglePicker(): void {
   else handle.startPicker();
 }
 
+const copyFeedback = ref<'idle' | 'copying' | 'copied' | 'error'>('idle');
+let copyFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
+
 async function onCopyClick(): Promise<void> {
-  // Stop picker before save — fs-access can fall back to `<a download>`
-  // clicks which, while picker is active, would otherwise be captured as
-  // stray frames during the save flow.
   handle.stopPicker();
-  await handle.copyMarkdown();
+  copyFeedback.value = 'copying';
+  try {
+    await handle.copyMarkdown();
+    copyFeedback.value = 'copied';
+  }
+  catch {
+    copyFeedback.value = 'error';
+  }
+  // Schedule fade-back — independent of saveBundle since save can take seconds.
+  if (copyFeedbackTimeout) clearTimeout(copyFeedbackTimeout);
+  copyFeedbackTimeout = setTimeout(() => { copyFeedback.value = 'idle'; }, 1800);
   await handle.saveBundle();
 }
 
