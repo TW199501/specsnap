@@ -32,17 +32,24 @@ import type {
   Session
 } from '@tw199501/specsnap-inspector-core';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   scope?: InspectorOptions['scope'];
   position?: PanelPosition;
   trigger?: boolean;
   panelTitle?: string;
   onSave?: (bundle: SpecSnapBundle) => void | Promise<void>;
-}>();
+}>(), {
+  position: 'bottom-right',
+  trigger: true,
+  panelTitle: 'SpecSnap Inspector'
+});
 
-const resolvedPosition = computed<PanelPosition>(() => props.position ?? 'bottom-right');
-const resolvedTitle = computed<string>(() => props.panelTitle ?? 'SpecSnap Inspector');
-const showTrigger = computed<boolean>(() => props.trigger ?? true);
+// With withDefaults, Vue gives these props their defaults at runtime.
+// We still narrow the types via computed wrappers so the template bindings
+// compile cleanly under vue-tsc (which doesn't always see through withDefaults).
+const resolvedPosition = computed<PanelPosition>(() => (props.position ?? 'bottom-right') as PanelPosition);
+const resolvedTitle = computed<string>(() => (props.panelTitle ?? 'SpecSnap Inspector'));
+const showTrigger = computed<boolean>(() => props.trigger);
 
 const emit = defineEmits<{
   save: [SpecSnapBundle];
