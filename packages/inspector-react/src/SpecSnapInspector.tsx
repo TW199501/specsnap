@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useCallback } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { TriggerButton } from './TriggerButton.js';
 import { Panel } from './Panel.js';
@@ -78,9 +78,21 @@ export const SpecSnapInspector = forwardRef<SpecSnapInspectorHandle, SpecSnapIns
       handle
     }), [handle]);
 
+    const [copyFeedback, setCopyFeedback] = useState<'idle' | 'copying' | 'copied' | 'error'>('idle');
+    const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const onCopy = useCallback(async () => {
       handle.stopPicker();
-      await handle.copyMarkdown();
+      setCopyFeedback('copying');
+      try {
+        await handle.copyMarkdown();
+        setCopyFeedback('copied');
+      }
+      catch {
+        setCopyFeedback('error');
+      }
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopyFeedback('idle'), 1800);
       await handle.saveBundle();
     }, [handle]);
 
@@ -102,6 +114,7 @@ export const SpecSnapInspector = forwardRef<SpecSnapInspectorHandle, SpecSnapIns
             snapshot={snapshot}
             position={position}
             title={panelTitle}
+            copyFeedback={copyFeedback}
             onClose={handle.close}
             onTogglePicker={onTogglePicker}
             onClear={handle.clearFrames}

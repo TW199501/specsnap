@@ -141,7 +141,7 @@ function identify(el: Element): ElementIdentity {
   const tagName = el.tagName.toLowerCase();
   const id = el.id || null;
   const classList = [...el.classList];
-  const name = formatName(tagName, id, classList, el.textContent);
+  const name = formatName(el, tagName, id, classList);
   const domPath = buildDomPath(el);
   const identity: ElementIdentity = { tagName, id, classList, name, domPath };
   const i18nKey = el.getAttribute('data-i18n-key');
@@ -151,15 +151,54 @@ function identify(el: Element): ElementIdentity {
   return identity;
 }
 
+/**
+ * Pick a human-readable name for the element. Priority order:
+ *   1. `id`          → `tag#id`          (unique, stable — use if present)
+ *   2. `aria-label`  → `tag[aria-label="…"]`  (accessibility-first naming)
+ *   3. heading child → `tag[heading="…"]`     (first h1..h6 descendant text)
+ *   4. short, whitespace-normalized text content → `tag[text="…"]`
+ *   5. first class  → `tag.class`
+ *   6. bare tag
+ *
+ * Why the priority: downstream AI consumers need UNIQUE-ISH names for
+ * "find this again". id and aria-label are usually unique; headings
+ * typically identify sections; class is last-resort (often shared).
+ *
+ * v0.0.6: textContent read via `innerText || textContent` + whitespace
+ * collapse so `<h2>Card</h2><p>body</p>` no longer renders as `"Cardbody"`.
+ */
 function formatName(
+  el: Element,
   tag: string,
   id: string | null,
-  classes: readonly string[],
-  text: string | null
+  classes: readonly string[]
 ): string {
   if (id) return `${tag}#${id}`;
-  const snippet = text ? text.trim().slice(0, 24) : '';
-  if (snippet) return `${tag}[text="${snippet}"]`;
+
+  const ariaLabel = el.getAttribute('aria-label');
+  if (ariaLabel && ariaLabel.trim()) {
+    return `${tag}[aria-label="${ariaLabel.trim().slice(0, 40)}"]`;
+  }
+
+  const heading = el.querySelector('h1, h2, h3, h4, h5, h6');
+  if (heading && heading.textContent) {
+    const headingText = heading.textContent.trim().slice(0, 40);
+    if (headingText) return `${tag}[heading="${headingText}"]`;
+  }
+
+  // Prefer innerText (respects whitespace + block boundaries) over textContent.
+  const rawText = (el as HTMLElement).innerText ?? el.textContent ?? '';
+  // Collapse runs of whitespace to a single space, trim.
+  const normalized = rawText.replace(/\s+/g, ' ').trim();
+  if (normalized) {
+    // Prefer to break on a word boundary near the 24-char mark rather than
+    // chopping mid-word ("A dark cardwith some sty" → "A dark card" wins).
+    const snippet = normalized.length <= 24
+      ? normalized
+      : normalized.slice(0, 24).replace(/\s+\S*$/, '');
+    if (snippet) return `${tag}[text="${snippet}"]`;
+  }
+
   return classes[0] ? `${tag}.${classes[0]}` : tag;
 }
 

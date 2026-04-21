@@ -160,7 +160,7 @@ describe('identity extras in MD body', () => {
 describe('border subpixel display', () => {
   it('rounds fractional border widths to the nearest CSS pixel in MD output', () => {
     const session = {
-      schemaVersion: '0.0.5' as const,
+      schemaVersion: '0.0.6' as const,
       id: 's-test',
       capturedAt: '2026-04-20T00:00:00Z',
       url: '',

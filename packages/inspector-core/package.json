@@ -1,6 +1,6 @@
 {
   "name": "@tw199501/specsnap-inspector-core",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Framework-agnostic logic powering SpecSnap Inspector UIs",
   "type": "module",
   "main": "./dist/index.cjs",

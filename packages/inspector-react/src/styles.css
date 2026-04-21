@@ -15,8 +15,8 @@
   --specsnap-accent-contrast: #ffffff;
   --specsnap-danger: #ef4444;
   --specsnap-success: #10b981;
-  --specsnap-panel-width: 420px;
-  --specsnap-panel-height: 540px;
+  --specsnap-panel-width: 520px;
+  --specsnap-panel-height: 560px;
   --specsnap-trigger-size: 44px;
   --specsnap-z-index: 2147483000;
   --specsnap-radius: 12px;
@@ -116,6 +116,17 @@
 .specsnap-inspector-panel__actions .specsnap-btn-primary.active {
   filter: brightness(0.9);
 }
+.specsnap-inspector-panel__actions button.is-feedback-ok {
+  background: var(--specsnap-success);
+  color: white;
+  border-color: var(--specsnap-success);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.specsnap-inspector-panel__actions button.is-feedback-err {
+  background: var(--specsnap-danger);
+  color: white;
+  border-color: var(--specsnap-danger);
+}
 
 .specsnap-inspector-panel__frames {
   flex: 1;
@@ -127,11 +138,13 @@
   border: 1px solid var(--specsnap-panel-border);
   border-radius: 8px;
   margin-top: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+.specsnap-inspector-frame__row {
   display: flex;
   gap: 8px;
   align-items: center;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
 }
 .specsnap-inspector-frame__index {
   background: var(--specsnap-accent);
@@ -142,6 +155,50 @@
   place-items: center;
   border-radius: 50%;
   font-size: 11px;
+  flex-shrink: 0;
+}
+.specsnap-inspector-frame__detail {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--specsnap-panel-border);
+}
+.specsnap-inspector-frame__boxmodel {
+  display: block;
+}
+.specsnap-inspector-bmdiag {
+  display: block;
+  height: auto;
+}
+.specsnap-inspector-frame__meta {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  font-size: 10px;
+  color: var(--specsnap-text-muted);
+  min-width: 0;
+}
+.specsnap-inspector-frame__meta > div {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  align-items: baseline;
+}
+.specsnap-inspector-frame__meta > div.specsnap-inspector-frame__meta-wide dd {
+  font-size: 10px;
+  line-height: 1.3;
+  word-break: break-word;
+}
+.specsnap-inspector-frame__meta dt {
+  font-weight: 600;
+  color: var(--specsnap-text-primary);
+  margin: 0;
+}
+.specsnap-inspector-frame__meta dd {
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 .specsnap-inspector-empty {
   text-align: center;

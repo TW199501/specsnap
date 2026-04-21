@@ -2,7 +2,7 @@
  * SCHEMA VERSION — bump on any breaking change to exported types.
  * Consumers check Session.schemaVersion for compatibility.
  */
-export const SCHEMA_VERSION = '0.0.5';
+export const SCHEMA_VERSION = '0.0.6';
 
 /** Absolute pixel rectangle relative to the document (not the viewport). */
 export interface Rect {
