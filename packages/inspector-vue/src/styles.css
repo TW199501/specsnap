@@ -175,6 +175,11 @@
   grid-template-columns: 52px 1fr;
   align-items: baseline;
 }
+.specsnap-inspector-frame__meta > div.specsnap-inspector-frame__meta-wide dd {
+  font-size: 10px;
+  line-height: 1.3;
+  word-break: break-word;
+}
 .specsnap-inspector-frame__meta dt {
   font-weight: 600;
   color: var(--specsnap-text-primary);

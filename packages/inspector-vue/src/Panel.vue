@@ -60,6 +60,9 @@
             <div><dt>border</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.border) }}</dd></div>
             <div><dt>margin</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.margin) }}</dd></div>
             <div><dt>font</dt><dd>{{ fontLine(snapshot.session.frames[i]!) }}</dd></div>
+            <div class="specsnap-inspector-frame__meta-wide">
+              <dt>family</dt><dd>{{ snapshot.session.frames[i]!.typography.fontFamily }}</dd>
+            </div>
             <div><dt>bg</dt><dd>{{ backgroundLine(snapshot.session.frames[i]!) }}</dd></div>
             <div v-if="gapAfter(i)"><dt>↓ gap</dt><dd>{{ gapAfter(i) }}</dd></div>
           </dl>
@@ -149,7 +152,8 @@ function rgbToHex(rgb: string): string {
 
 function fontLine(frame: Frame): string {
   const t = frame.typography;
-  return `${t.fontSize}px · ${t.fontWeight} · ${rgbToHex(t.color)}`;
+  const lh = t.lineHeight === 'normal' ? '' : ` · ${t.lineHeight}`;
+  return `${t.fontSize}px · ${t.fontWeight}${lh} · ${rgbToHex(t.color)}`;
 }
 
 function backgroundLine(frame: Frame): string {
