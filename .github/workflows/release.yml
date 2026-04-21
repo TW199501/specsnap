@@ -66,27 +66,34 @@ jobs:
           done
           echo "All 4 packages at $TAG_VERSION — OK"
 
-      - name: Write $HOME/.npmrc with literal auth token
-        # Standard pnpm + changesets + GitHub Actions recipe.
-        # setup-node@v4's registry-url+NODE_AUTH_TOKEN produces an $HOME/.npmrc
-        # with a placeholder `${NODE_AUTH_TOKEN}` that npm expands at publish
-        # time — but changeset publish's subprocess chain doesn't always
-        # propagate the env var, resulting in ENEEDAUTH.
-        # Writing a literal token directly to $HOME/.npmrc removes the env-var
-        # hop, matching the pattern documented in changesets' own GitHub
-        # Actions examples.
+      - name: Write .npmrc (both $HOME and repo root) with literal token
+        # Previous 4 attempts showed that neither setup-node's $HOME/.npmrc
+        # placeholder-expansion nor a repo-root .npmrc was picked up by
+        # `changeset publish`'s subprocess chain — every package hit ENEEDAUTH.
+        # Writing to BOTH locations + switching to `pnpm publish -r` (which
+        # reliably reads .npmrc) instead of `changeset publish`.
         run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > $HOME/.npmrc
+          NPMRC_LINE="//registry.npmjs.org/:_authToken=${NPM_TOKEN}"
+          echo "$NPMRC_LINE" > $HOME/.npmrc
           echo "registry=https://registry.npmjs.org/" >> $HOME/.npmrc
-          echo "always-auth=true" >> $HOME/.npmrc
+          echo "$NPMRC_LINE" > .npmrc
+          echo "registry=https://registry.npmjs.org/" >> .npmrc
+          # Sanity check: verify lines landed, but mask the token in log.
+          echo "--- $HOME/.npmrc (redacted) ---"
+          sed "s|${NPM_TOKEN}|***REDACTED***|g" $HOME/.npmrc
+          echo "--- ./.npmrc (redacted) ---"
+          sed "s|${NPM_TOKEN}|***REDACTED***|g" .npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish via changesets
+      - name: Publish all packages via pnpm -r
+        # pnpm publish -r respects .npmrc auth reliably. --no-git-checks
+        # because we're on a detached tag, --access public for @scope/*.
+        # Order: core first (others depend on it), then inspector-*.
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm release
+        run: pnpm publish -r --access public --no-git-checks
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
