@@ -75,7 +75,18 @@ Pre-alpha（v0.0.x）— schema 可能微調，v1.0 時凍結。
 
 ## 使用 Inspector UI
 
-Vue 3 或 React 18+ 都是 drop-in 零設定。
+Vue 3 或 React 18+ 都是 drop-in 零設定。同一個 panel、同一套 on-page overlay、同樣的 captured data — 用哪個框架都可以：
+
+<table>
+<tr>
+<td width="50%"><img src="./intro-vue.png" alt="Vue 3 版 SpecSnap Inspector — 面板含 box-model 圖、編號 overlay badge、元素間距標示線" /></td>
+<td width="50%"><img src="./intro-react.png" alt="React 18 版 SpecSnap Inspector — 跟 Vue 版等價功能" /></td>
+</tr>
+<tr>
+<td align="center"><code>@tw199501/specsnap-inspector-vue</code></td>
+<td align="center"><code>@tw199501/specsnap-inspector-react</code></td>
+</tr>
+</table>
 
 ### Vue 3
 

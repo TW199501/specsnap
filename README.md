@@ -75,7 +75,18 @@ Pre-alpha (v0.0.x) — schema may change. Locking in at v1.0.
 
 ## Use the Inspector UI
 
-Zero-config drop-in for Vue 3 or React 18+.
+Zero-config drop-in for Vue 3 or React 18+. Same panel, same on-page overlay, same captured data — whichever framework you use:
+
+<table>
+<tr>
+<td width="50%"><img src="./intro-vue.png" alt="SpecSnap Inspector for Vue 3 — panel with box-model diagrams, numbered overlay badges, and inter-element gap lines" /></td>
+<td width="50%"><img src="./intro-react.png" alt="SpecSnap Inspector for React 18 — identical feature set via drop-in component" /></td>
+</tr>
+<tr>
+<td align="center"><code>@tw199501/specsnap-inspector-vue</code></td>
+<td align="center"><code>@tw199501/specsnap-inspector-react</code></td>
+</tr>
+</table>
 
 ### Vue 3
 
