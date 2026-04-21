@@ -90,6 +90,58 @@ describe('captureElement', () => {
     expect(match![1]!.length).toBeLessThanOrEqual(24);
   });
 
+  it('v0.0.6 name: uses aria-label when present (higher priority than text)', () => {
+    clearBody();
+    const el = document.createElement('button');
+    el.setAttribute('aria-label', 'Close dialog');
+    el.textContent = 'X';
+    mount(el);
+    const frame = captureElement(el, 1);
+    expect(frame.identity.name).toBe('button[aria-label="Close dialog"]');
+  });
+
+  it('v0.0.6 name: falls back to heading child text when no id / aria-label', () => {
+    clearBody();
+    const wrapper = document.createElement('div');
+    const heading = document.createElement('h2');
+    heading.textContent = 'Settings';
+    const body = document.createElement('p');
+    body.textContent = 'body copy';
+    wrapper.appendChild(heading);
+    wrapper.appendChild(body);
+    mount(wrapper);
+    const frame = captureElement(wrapper, 1);
+    expect(frame.identity.name).toBe('div[heading="Settings"]');
+  });
+
+  it('v0.0.6 name: textContent from block children is whitespace-normalized (no more "cardwith" glue-bug)', () => {
+    clearBody();
+    const wrapper = document.createElement('div');
+    const h2 = document.createElement('div'); // not a heading so priority skips
+    h2.textContent = 'A dark card';
+    const p = document.createElement('p');
+    p.textContent = 'with some styled text';
+    wrapper.appendChild(h2);
+    wrapper.appendChild(p);
+    mount(wrapper);
+    const frame = captureElement(wrapper, 1);
+    // Must NOT be the old "cardwith some sty" output. Must have a space between words.
+    expect(frame.identity.name).not.toMatch(/cardwith/);
+    expect(frame.identity.name).toMatch(/^div\[text="A dark card/);
+  });
+
+  it('v0.0.6 name: breaks on word boundary near 24 chars instead of mid-word', () => {
+    clearBody();
+    // "styled" would be cut as "sty" at char 24 without word-boundary break.
+    const el = mount(makeElement({ tag: 'p', text: 'A dark card with some styled text' }));
+    const frame = captureElement(el, 1);
+    const match = frame.identity.name.match(/^p\[text="(.+)"\]$/);
+    expect(match).not.toBeNull();
+    // The snippet must end at a complete word (no "sty" tail from "styled").
+    expect(match![1]).not.toMatch(/\bsty$/);
+    expect(match![1]!.length).toBeLessThanOrEqual(24);
+  });
+
   it('reads data-i18n-key attribute into identity.i18nKey when present', () => {
     clearBody();
     const el = document.createElement('button');
@@ -136,7 +188,7 @@ describe('captureSession', () => {
     expect(session.frames[1]!.index).toBe(2);
     expect(session.viewport.width).toBeGreaterThan(0);
     expect(session.capturedAt).toMatch(/\d{4}-\d{2}-\d{2}T/);
-    expect(session.schemaVersion).toBe('0.0.5');
+    expect(session.schemaVersion).toBe('0.0.6');
     expect(session.id).toMatch(/^s-[a-z0-9]{6}$/);
   });
 
@@ -144,7 +196,7 @@ describe('captureSession', () => {
     const session = captureSession([]);
     expect(session.frames).toHaveLength(0);
     expect(session.viewport.width).toBeGreaterThan(0);
-    expect(session.schemaVersion).toBe('0.0.5');
+    expect(session.schemaVersion).toBe('0.0.6');
   });
 
   it('produces unique 1-based indices across many frames', () => {

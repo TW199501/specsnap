@@ -1,0 +1,51 @@
+{
+  "name": "@tw199501/specsnap-inspector-core",
+  "version": "0.0.8",
+  "description": "Framework-agnostic logic powering SpecSnap Inspector UIs",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check": "tsc --noEmit",
+    "dev": "tsup --watch"
+  },
+  "peerDependencies": {
+    "@tw199501/specsnap-core": "workspace:^"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "fake-indexeddb": "^6.0.0",
+    "fflate": "^0.8.2",
+    "happy-dom": "^20.9.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "tw199501",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tw199501/specsnap.git",
+    "directory": "packages/inspector-core"
+  },
+  "keywords": ["specsnap", "inspector", "ui", "dom", "capture", "devtools"]
+}
