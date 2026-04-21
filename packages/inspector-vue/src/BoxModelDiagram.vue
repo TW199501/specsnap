@@ -52,15 +52,14 @@ type Frame = Session['frames'][number];
 
 const props = defineProps<{ frame: Frame }>();
 
-// Canvas size — wide enough for "1152×431" style label + per-side numbers.
-const W = 240;
-const H = 180;
+// Canvas — tightened so the diagram can sit beside the meta dl in one row.
+const W = 200;
+const H = 150;
 
 // Each layer gets a fixed visual width so margin/border/padding are always
 // distinguishable, even when their actual values are 0. The numeric label
-// inside each layer carries the real value. Thicker layers → smaller
-// content box, which reads more like the DevTools-style reference.
-const LAYER = 24;
+// inside each layer carries the real value.
+const LAYER = 20;
 const mT = LAYER; const mR = LAYER; const mB = LAYER; const mL = LAYER;
 const bT = LAYER; const bR = LAYER; const bB = LAYER; const bL = LAYER;
 const pT = LAYER; const pR = LAYER; const pB = LAYER; const pL = LAYER;
