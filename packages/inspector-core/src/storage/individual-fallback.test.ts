@@ -6,7 +6,8 @@ function fakeBundle(): SpecSnapBundle {
   return {
     dirName: '20260420',
     captureId: '20260420-01',
-    markdown: { filename: '20260420-01.md', content: '# hello' },
+    markdownFilename: '20260420-01.md',
+    markdownContent: '# hello',
     images: [
       { filename: '20260420-01-1.png', blob: new Blob(['x'], { type: 'image/png' }) }
     ]

@@ -6,7 +6,8 @@ function fakeBundle(): SpecSnapBundle {
   return {
     dirName: '20260420',
     captureId: '20260420-01',
-    markdown: { filename: '20260420-01.md', content: '# hi' },
+    markdownFilename: '20260420-01.md',
+    markdownContent: '# hi',
     images: []
   };
 }

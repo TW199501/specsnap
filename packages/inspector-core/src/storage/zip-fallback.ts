@@ -30,9 +30,9 @@ export async function saveBundleAsZip(bundle: SpecSnapBundle): Promise<SaveResul
   try {
     const fflate = await loadFflate();
 
-    const mdBytes = new TextEncoder().encode(bundle.markdown.content);
+    const mdBytes = new TextEncoder().encode(bundle.markdownContent);
     const entries: Record<string, Uint8Array> = {};
-    entries[`${bundle.dirName}/${bundle.markdown.filename}`] = mdBytes;
+    entries[`${bundle.dirName}/${bundle.markdownFilename}`] = mdBytes;
     for (const img of bundle.images) {
       entries[`${bundle.dirName}/${img.filename}`] = await blobToUint8(img.blob);
     }

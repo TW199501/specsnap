@@ -58,7 +58,7 @@ export function createStore(opts: CreateStoreOptions): Store {
       const nextVal = partial[k];
       if (nextVal === undefined) continue;
       if (next[k] !== nextVal) {
-        (next as Record<string, unknown>)[k] = nextVal;
+        (next as unknown as Record<string, unknown>)[k] = nextVal;
         changed = true;
       }
     }

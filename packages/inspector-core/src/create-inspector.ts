@@ -29,8 +29,8 @@ function getLocalStorageSafely(): Storage | null {
 function toBundleToWrite(b: SpecSnapBundle): BundleToWrite {
   return {
     dirName: b.dirName,
-    markdownFilename: b.markdown.filename,
-    markdownContent: b.markdown.content,
+    markdownFilename: b.markdownFilename,
+    markdownContent: b.markdownContent,
     images: b.images
   };
 }
@@ -135,7 +135,7 @@ export function createInspector(options: InspectorOptions = {}): InspectorHandle
     const bundle = await toSpecSnapBundle(session, { date: now });
 
     const result = await saveBundleWithLadder(bundle, {
-      onSave: options.onSave,
+      ...(options.onSave ? { onSave: options.onSave } : {}),
       strategies: {
         fsAccess: async (b) => {
           try {

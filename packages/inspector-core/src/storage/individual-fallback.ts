@@ -14,8 +14,8 @@ function downloadBlob(blob: Blob, filename: string): void {
 
 export async function saveBundleAsIndividualFiles(bundle: SpecSnapBundle): Promise<SaveResult> {
   try {
-    const mdBlob = new Blob([bundle.markdown.content], { type: 'text/markdown' });
-    downloadBlob(mdBlob, bundle.markdown.filename);
+    const mdBlob = new Blob([bundle.markdownContent], { type: 'text/markdown' });
+    downloadBlob(mdBlob, bundle.markdownFilename);
     for (const img of bundle.images) {
       downloadBlob(img.blob, img.filename);
     }
