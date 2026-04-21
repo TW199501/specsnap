@@ -1,0 +1,31 @@
+{
+  "name": "@tw199501/vue-spike",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "esbuild-plugin-vue3": "^0.4.2",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vue": "^3.5.0",
+    "vue-tsc": "^2.2.0"
+  }
+}
