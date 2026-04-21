@@ -13,9 +13,13 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "check:eol": "node scripts/check-line-endings.mjs",
-    "check": "pnpm check:eol && pnpm -r check"
+    "check": "pnpm check:eol && pnpm -r check",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm -r build && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "typescript": "^6.0.3"
   }
 }
