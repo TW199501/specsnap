@@ -35,15 +35,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Matches the local `pnpm check` — LF enforcement + tsc --noEmit across all workspaces.
+      # Build FIRST — inspector-core's tsc needs packages/core/dist/*.d.ts to
+      # resolve its workspace import of @tw199501/specsnap-core. Running check
+      # before build hits TS2307 "Cannot find module" on a fresh checkout.
+      - name: Build (tsup, all packages)
+        run: pnpm build
+
+      # Matches the local `pnpm check` — LF enforcement + depcruise + tsc --noEmit across all workspaces.
       - name: Check (LF + types)
         run: pnpm check
 
-      - name: Test (vitest, core)
+      - name: Test (vitest, all workspaces)
         run: pnpm test
-
-      - name: Build (tsup, core)
-        run: pnpm build
 
       # If the tarball would balloon unexpectedly, catch it before publish.
       - name: Pack dry-run
