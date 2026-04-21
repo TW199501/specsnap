@@ -8,8 +8,8 @@
     <text :x="W / 2" :y="H - 3" text-anchor="middle" font-size="9" fill="#92400e">{{ m[2] }}</text>
     <text x="4" :y="H / 2 + 3" font-size="9" fill="#92400e">{{ m[3] }}</text>
 
-    <!-- border layer -->
-    <rect :x="mL" :y="mT" :width="W - mL - mR" :height="H - mT - mB" fill="#fde68a" stroke="#78350f" stroke-width="1" rx="2" />
+    <!-- border layer (dashed like margin/padding — fill carries the meaning, not the stroke) -->
+    <rect :x="mL" :y="mT" :width="W - mL - mR" :height="H - mT - mB" fill="#fde68a" stroke="#78350f" stroke-width="1" stroke-dasharray="4 3" rx="2" />
     <text :x="mL + 4" :y="mT + 11" font-size="9" fill="#78350f">border</text>
     <text :x="W / 2" :y="mT + 8" text-anchor="middle" font-size="9" fill="#78350f">{{ b[0] }}</text>
     <text :x="W - mR - 4" :y="(mT + (H - mB)) / 2 + 3" text-anchor="end" font-size="9" fill="#78350f">{{ b[1] }}</text>

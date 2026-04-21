@@ -59,7 +59,7 @@
             <div><dt>padding</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.padding) }}</dd></div>
             <div><dt>border</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.border) }}</dd></div>
             <div><dt>margin</dt><dd>{{ fourSides(snapshot.session.frames[i]!.boxModel.margin) }}</dd></div>
-            <div><dt>font</dt><dd>{{ snapshot.session.frames[i]!.typography.fontSize }}px · {{ snapshot.session.frames[i]!.typography.color }}</dd></div>
+            <div><dt>font</dt><dd>{{ fontLine(snapshot.session.frames[i]!) }}</dd></div>
           </dl>
         </div>
       </div>
@@ -129,6 +129,25 @@ function frameSize(frame: Frame): string {
 
 function fourSides(sides: readonly [number, number, number, number]): string {
   return sides.map(n => Math.round(n)).join(' / ');
+}
+
+function rgbToHex(rgb: string): string {
+  const m = rgb.match(/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?/i);
+  if (!m) return rgb;
+  const [, r, g, b, a] = m;
+  const hex = (n: number) => n.toString(16).padStart(2, '0');
+  const base = '#' + hex(+r!) + hex(+g!) + hex(+b!);
+  // Collapse #aabbcc -> #abc when possible
+  if (base[1] === base[2] && base[3] === base[4] && base[5] === base[6]) {
+    const short = '#' + base[1] + base[3] + base[5];
+    return a !== undefined && +a < 1 ? `${short} / ${a}` : short;
+  }
+  return a !== undefined && +a < 1 ? `${base} / ${a}` : base;
+}
+
+function fontLine(frame: Frame): string {
+  const t = frame.typography;
+  return `${t.fontSize}px · ${t.fontWeight} · ${rgbToHex(t.color)}`;
 }
 
 function describeFrame(el: HTMLElement): string {
