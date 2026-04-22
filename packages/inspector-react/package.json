@@ -23,8 +23,10 @@
     "check": "tsc --noEmit",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "@tw199501/specsnap-inspector-core": "workspace:^"
+  },
   "peerDependencies": {
-    "@tw199501/specsnap-inspector-core": "workspace:^",
     "react": ">=18",
     "react-dom": ">=18"
   },

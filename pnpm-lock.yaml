@@ -156,13 +156,14 @@ importers:
         version: 4.1.4(@types/node@22.19.17)(@vitest/coverage-v8@4.1.4)(happy-dom@20.9.0)(vite@8.0.9(@types/node@22.19.17)(esbuild@0.27.7))
 
   packages/inspector-react:
+    dependencies:
+      '@tw199501/specsnap-inspector-core':
+        specifier: workspace:^
+        version: link:../inspector-core
     devDependencies:
       '@testing-library/react':
         specifier: ^16.1.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@tw199501/specsnap-inspector-core':
-        specifier: workspace:*
-        version: link:../inspector-core
       '@types/node':
         specifier: ^22.10.0
         version: 22.19.17
@@ -195,10 +196,11 @@ importers:
         version: 4.1.4(@types/node@22.19.17)(@vitest/coverage-v8@4.1.4)(happy-dom@20.9.0)(vite@8.0.9(@types/node@22.19.17)(esbuild@0.27.7))
 
   packages/inspector-vue:
-    devDependencies:
+    dependencies:
       '@tw199501/specsnap-inspector-core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../inspector-core
+    devDependencies:
       '@types/node':
         specifier: ^22.10.0
         version: 22.19.17

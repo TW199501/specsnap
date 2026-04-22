@@ -79,7 +79,11 @@ Zero-config drop-in for Vue 3 or React 18+. Same panel, same on-page overlay, sa
 
 ### Vue 3
 
+```bash
+pnpm add @tw199501/specsnap-inspector-vue
 ```
+
+```vue
 <template>
   <SpecSnapInspector />
 </template>

@@ -5,8 +5,10 @@ Drop-in Vue 3 SpecSnap Inspector. Zero config: install, import, drop the compone
 ## Install
 
 ```bash
-pnpm add @tw199501/specsnap-inspector-vue @tw199501/specsnap-inspector-core @tw199501/specsnap-core vue
+pnpm add @tw199501/specsnap-inspector-vue
 ```
+
+`vue` (>=3.3) is a peer — assumed to already be in your project.
 
 ## Usage
 

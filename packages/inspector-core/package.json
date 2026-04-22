@@ -23,10 +23,9 @@
     "check": "tsc --noEmit",
     "dev": "tsup --watch"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@tw199501/specsnap-core": "workspace:^"
   },
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@vitest/coverage-v8": "^4.1.4",

@@ -5,8 +5,10 @@ Drop-in React 18+ SpecSnap Inspector. Zero-config: install, import, drop the com
 ## Install
 
 ```bash
-pnpm add @tw199501/specsnap-inspector-react @tw199501/specsnap-inspector-core @tw199501/specsnap-core react react-dom
+pnpm add @tw199501/specsnap-inspector-react
 ```
+
+`react` and `react-dom` (>=18) are peers — assumed to already be in your project.
 
 ## Usage
 
