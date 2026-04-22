@@ -79,8 +79,8 @@ Vue 3 或 React 18+ 都是 drop-in 零設定。同一個 panel、同一套 on-pa
 
 <table>
 <tr>
-<td width="50%"><img src="./intro-vue.png" alt="Vue 3 版 SpecSnap Inspector — 面板含 box-model 圖、編號 overlay badge、元素間距標示線" /></td>
-<td width="50%"><img src="./intro-react.png" alt="React 18 版 SpecSnap Inspector — 跟 Vue 版等價功能" /></td>
+<td width="50%"><a href="./intro-vue.jpg"><img src="./intro-vue.jpg" alt="Vue 3 版 SpecSnap Inspector — 面板含 box-model 圖、編號 overlay badge、元素間距標示線" /></a></td>
+<td width="50%"><a href="./intro-react.jpg"><img src="./intro-react.jpg" alt="React 18 版 SpecSnap Inspector — 跟 Vue 版等價功能" /></a></td>
 </tr>
 <tr>
 <td align="center"><code>@tw199501/specsnap-inspector-vue</code></td>

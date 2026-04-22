@@ -13,10 +13,11 @@ The vision, decisions, and per-version plans live in [docs/superpower/plan/](doc
 pnpm workspace (`pnpm-workspace.yaml` → `packages/*`, `apps/*`):
 
 - [packages/core](packages/core) — `@tw199501/specsnap-core`. Ships `.mjs` + `.cjs` + `.d.ts` via tsup. One runtime dep: `dom-to-image-more` (used only by the PNG path, **dynamically imported** inside [to-annotated-png.ts](packages/core/src/to-annotated-png.ts) so `toMarkdown`/`toJSON`-only consumers don't pay for it — don't convert it to a static import).
-- [packages/inspector-core](packages/inspector-core) — `@tw199501/specsnap-inspector-core`. Framework-agnostic headless Inspector: element picker, pub-sub store (`subscribe`/`getSnapshot`), sequence counter, clipboard, storage ladder (fs-access → ZIP → individual). `dependency-cruiser` enforces **no `vue`/`react`/`react-dom` imports** under `packages/inspector-core/src`.
+- [packages/inspector-core](packages/inspector-core) — `@tw199501/specsnap-inspector-core`. Framework-agnostic headless Inspector: element picker, pub-sub store (`subscribe`/`getSnapshot`), sequence counter, clipboard, storage ladder (fs-access → ZIP → individual), and on-page overlay ([overlay.ts](packages/inspector-core/src/overlay.ts) — numbered badges + outlines + gap lines rendered via `buildAnnotationSvg`, rAF-throttled on scroll/resize; added in v0.0.8). `dependency-cruiser` enforces **no `vue`/`react`/`react-dom` imports** under `packages/inspector-core/src`.
 - [packages/inspector-vue](packages/inspector-vue) — `@tw199501/specsnap-inspector-vue`. Thin Vue 3 wrapper: `<SpecSnapInspector />` SFC + `useInspector` composable bridging core's store via `shallowRef`. Uses `<Teleport>` to mount the panel on `document.body` to escape parent stacking contexts. Builds with `tsup` (esbuild-plugin-vue3) + `vue-tsc` for `.d.ts`.
 - [packages/inspector-react](packages/inspector-react) — `@tw199501/specsnap-inspector-react`. Thin React 18+ wrapper: `<SpecSnapInspector />` with `forwardRef`, `useInspector` hook via `useSyncExternalStore`. Uses `createPortal` for the panel.
 - [apps/playground](apps/playground) — Vite demo that imports core via `workspace:*`. Not published. Doubles as the primary visual regression check for capture/serialize changes. Has its own vitest config and Playground-local tests (e.g. [fs-access.test.ts](apps/playground/fs-access.test.ts)) covering File System Access API integration used by the bundle-save feature.
+- [apps/demo-vue](apps/demo-vue) / [apps/demo-react](apps/demo-react) — minimal Vite apps that consume `@tw199501/specsnap-inspector-vue` / `-inspector-react` via `workspace:*`. Not published. The hands-on UX testbed (the intro screenshots in the READMEs come from these) and the integration check that each wrapper actually drop-in boots with zero config. Prefer these over `apps/playground` when testing wrapper-level changes.
 - [docs/superpower/plan/](docs/superpower/plan/) — dated brainstorm → decisions → plan → retrospective docs. Treat these as the source of truth for scope decisions.
 
 ## Commands
@@ -62,7 +63,7 @@ Core is a single-purpose library: **DOM element → structured Session → Markd
 
 Everything else is in service of emitting a stable, versioned `Session` object ([packages/core/src/types.ts](packages/core/src/types.ts)).
 
-- `SCHEMA_VERSION` (currently `0.0.5`) is stamped onto every session at capture time. Bump it deliberately when any exported interface changes — downstream consumers branch on `session.schemaVersion`.
+- `SCHEMA_VERSION` (currently `0.0.6`) is stamped onto every session at capture time. Bump it deliberately when any exported interface changes — downstream consumers branch on `session.schemaVersion`.
 - A Session always carries `viewport` (`width`, `height`, `devicePixelRatio`) and `scroll` — this is non-negotiable (Principle P1 in [docs/superpower/plan/2026-04-19-vision.md](docs/superpower/plan/2026-04-19-vision.md)). Coordinates without viewport context are meaningless to AI.
 - `Frame.rect` is **document-relative**, not viewport-relative. `viewportRelative` is a separate `{xPct, yPct}` field computed from the rect + viewport. Don't conflate them.
 - `BoxModel.padding/border/margin` use the tuple `FourSides = [top, right, bottom, left]`. The serializer emits "上/右/下/左" in the same order; do not reorder.
@@ -144,7 +145,9 @@ pnpm version-packages           # consume changeset entries → bump package.jso
 pnpm release                    # `pnpm -r build` then `changeset publish` to npm
 ```
 
-0.0.6 was intentionally skipped when shipping 0.0.7 (inspector packages debut). See [docs/superpower/plan/2026-04-20-v007-inspector-packages-design.md](docs/superpower/plan/2026-04-20-v007-inspector-packages-design.md) for the design decisions.
+CI publish lives in [.github/workflows/release.yml](.github/workflows/release.yml): pushing a `v*` tag (e.g. `v0.0.8`) triggers `pnpm release` which publishes all 4 packages in lockstep. The older [.github/workflows/publish.yml](.github/workflows/publish.yml) is single-package (core-only, `core@*` tags) and is kept as a fallback — prefer `v*` tags for coordinated releases. Requires the `NPM_TOKEN` repo secret.
+
+0.0.6 was intentionally skipped when shipping 0.0.7 (inspector packages debut). See [docs/superpower/plan/2026-04-20-v007-inspector-packages-design.md](docs/superpower/plan/2026-04-20-v007-inspector-packages-design.md) and [docs/superpower/plan/2026-04-21-retrospective-v008.md](docs/superpower/plan/2026-04-21-retrospective-v008.md) for the v0.0.7/v0.0.8 design and retrospective notes.
 
 ## Conventions
 
@@ -157,7 +160,7 @@ pnpm release                    # `pnpm -r build` then `changeset publish` to np
   - [`@tw199501/specsnap-inspector-vue`](packages/inspector-vue) — Vue 3 drop-in. Uses `<Teleport>` + `shallowRef` subscription.
   - [`@tw199501/specsnap-inspector-react`](packages/inspector-react) — React 18+ drop-in. Uses `createPortal` + `useSyncExternalStore`.
 
-  When someone says "SpecSnap doesn't have a UI", point them at `npm i @tw199501/specsnap-inspector-vue` (or `-react`). The [apps/playground/main.ts](apps/playground/main.ts) hand-rolled inspector still exists as the historical reference; a follow-up (deferred to v0.0.8+) will migrate it to import inspector-core instead of maintaining two sources of truth.
+  When someone says "SpecSnap doesn't have a UI", point them at `npm i @tw199501/specsnap-inspector-vue` (or `-react`). The [apps/playground/main.ts](apps/playground/main.ts) hand-rolled inspector still exists as the historical reference; a follow-up (deferred to v0.0.9+ per the [v0.0.8 retrospective](docs/superpower/plan/2026-04-21-retrospective-v008.md)) will migrate it to import inspector-core instead of maintaining two sources of truth. Meanwhile `apps/demo-vue` and `apps/demo-react` already go the right way — they consume the published wrappers via `workspace:*`.
 
 ## License & authorship
 
